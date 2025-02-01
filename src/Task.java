@@ -5,20 +5,40 @@ public class Task {
     private final String name;
     private final String description;
     private final int id;
-    private final Status status;
+    private Status status;
 
     Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.id = TaskManager.taskScore;
         TaskManager.taskScore++;
+        this.id = TaskManager.taskScore;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) return false;
+        Task task = (Task) object;
         return Objects.equals(name, task.name) && Objects.equals(description, task.description);
     }
 
@@ -29,14 +49,10 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "Task{" + "ID=" + getId() +
                 ", name='" + name + '\'' +
                 "description='" + description + '\'' +
                 ", status=" + status +
                 '}';
-    }
-
-    public int getId() {
-        return id;
     }
 }

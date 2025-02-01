@@ -1,48 +1,39 @@
 import java.util.HashMap;
-import java.util.ArrayList;
 
 public class TaskManager {
 
+
+
     private static HashMap<Integer, Object> tasksMap = new HashMap<>();
-    protected static int taskScore = 1;
+    protected static int taskScore = 0;
 
 
-    static ArrayList outputAllTasks() {
-        ArrayList<Object> allTasks = new ArrayList<>();
-        for (Object task : tasksMap.values()) {
-            allTasks.add(task);
-        }
-        return allTasks;
+    static Object outputAllTasks() {
+        return tasksMap.values();
     }
 
-    static void clearAllTasks() {
+    static void clearAllTasks() { // Метод B
         tasksMap.clear();
+        taskScore = 0;
     }
 
-    static Object getById(int id) {
+    static Object getById(int id) { // Работает
         return tasksMap.get(id);
     }
 
-    static void addTask(Task task) {
+    static void addTask(Task task) { // Работает
         tasksMap.put(task.getId(), task);
     }
 
-    static void updateTask(Task task) {
-        tasksMap.replace(task.getId(), task);
+    static void addEpic(Epic epic) {
+        tasksMap.put(epic.getId(), epic);
     }
 
-    static void removeById(int id) {
+    static void updateTask(int id, Task task) { // Не работает
+        tasksMap.replace(id, task);
+    }
+
+    static void removeById(int id) { // Работает
         tasksMap.remove(id);
     }
-
-    // тест
-    static void printAll() {
-        for (Object task : tasksMap.keySet()) {
-            System.out.println("id: " + task);
-            System.out.println(tasksMap.get(task));
-        }
-    }
-    // тест
-
-
 }
