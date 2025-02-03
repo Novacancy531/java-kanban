@@ -1,69 +1,54 @@
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Epic extends Task {
 
-    private HashMap<Integer, Subtask> epicTasks;
+    ArrayList<Integer> subtasksList = new ArrayList<>();
 
     Epic(String name, String description) {
         super(name, description, Status.NEW);
-        epicTasks = new HashMap<>();
+        subtasksList = new ArrayList<>();
     }
 
-    HashMap outputAllSubtasks() {
-        return epicTasks;
+    public ArrayList<Integer> getSubtasksList() {
+        return subtasksList;
     }
+
+
+
 
     void addSubtask(Subtask subtask) {
-        epicTasks.put(subtask.getId(), subtask);
-        subtask.setSubtaskInEpic(getId());
-        setStatus(checkEpicStatus());
+        subtasksList.add(subtask.getId());
+        subtask.setEpicID(getId());
     }
 
-    void updateSubtask(int id, Subtask subtask) {
-        epicTasks.replace(id, subtask);
-        setStatus(checkEpicStatus());
-    }
 
-    void removeSubtask(int id) {
-        epicTasks.remove(id);
-        setStatus(checkEpicStatus());
-    }
-
-    void removeAllSubtask() {
-        epicTasks.clear();
-        setStatus(checkEpicStatus());
-    }
-
-    Status checkEpicStatus() {
+     void checkEpicStatus() {
         int resultDone = 0;
         int resultNew = 0;
-        for (Subtask currentSubtask : epicTasks.values()) {
-            if (currentSubtask.getStatus() == Status.DONE) {
+        for (int id : this.subtasksList) {
+            Subtask subtask = (Subtask) TaskManager.getSubtasks().get(id);
+            if (subtask.getStatus() == Status.DONE) {
                 resultDone++;
-            } else if (currentSubtask.getStatus() == Status.NEW) {
+            } else if (subtask.getStatus() == Status.NEW) {
                 resultNew++;
             }
         }
 
-        if (resultDone == epicTasks.size()) {
-            return Status.DONE;
-        } else if (resultNew == epicTasks.size() || epicTasks.isEmpty()) {
-            return Status.NEW;
+        if (resultDone == subtasksList.size()) {
+            this.setStatus(Status.DONE);
+        } else if (resultNew == subtasksList.size() || subtasksList.isEmpty()) {
+            this.setStatus(Status.NEW);
         } else {
-            return Status.IN_PROGRESS;
+            this.setStatus(Status.IN_PROGRESS);
         }
     }
 
-    public HashMap<Integer, Subtask> getEpicTasks() {
-        return epicTasks;
-    }
 
     @Override
     public String toString() {
         return "Epic{" + "ID=" + hashCode() + ", name=" + getName() + ", description=" + getDescription() +
-                ", status=" + getStatus() +
-                ", epicTasks=" + epicTasks +
-                '}';
+                ", status=" + getStatus();
     }
 
 }

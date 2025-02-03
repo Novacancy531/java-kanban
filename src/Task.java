@@ -4,15 +4,15 @@ public class Task {
 
     private final String name;
     private final String description;
-    private final int id;
+    private int id;
     private Status status;
 
     Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
-        TaskManager.taskScore++;
-        this.id = TaskManager.taskScore;
+        TaskManager.numberOfTasks++;
+        this.id = TaskManager.numberOfTasks;
     }
 
     public int getId() {
@@ -35,6 +35,10 @@ public class Task {
         this.status = status;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) return false;
@@ -44,7 +48,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description);
+        return id;
     }
 
     @Override
