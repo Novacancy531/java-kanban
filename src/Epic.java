@@ -1,9 +1,10 @@
-import java.util.HashMap;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
 
-    ArrayList<Integer> subtasksList = new ArrayList<>();
+    private ArrayList<Integer> subtasksList;
+
 
     Epic(String name, String description) {
         super(name, description, Status.NEW);
@@ -14,41 +15,38 @@ public class Epic extends Task {
         return subtasksList;
     }
 
-
-
-
-    void addSubtask(Subtask subtask) {
-        subtasksList.add(subtask.getId());
-        subtask.setEpicID(getId());
+    public void setSubtasksList(ArrayList<Integer> subtasksList) {
+        this.subtasksList = subtasksList;
     }
 
-
-     void checkEpicStatus() {
+    Status checkEpicStatus() {
         int resultDone = 0;
         int resultNew = 0;
-        for (int id : this.subtasksList) {
-            Subtask subtask = (Subtask) TaskManager.getSubtasks().get(id);
+        for (int id : subtasksList) {
+            Subtask subtask = (Subtask) TaskManager.subtasks.get(id);
             if (subtask.getStatus() == Status.DONE) {
                 resultDone++;
-            } else if (subtask.getStatus() == Status.NEW) {
+            }
+            if (subtask.getStatus() == Status.NEW) {
                 resultNew++;
             }
         }
-
         if (resultDone == subtasksList.size()) {
-            this.setStatus(Status.DONE);
+            return Status.DONE;
         } else if (resultNew == subtasksList.size() || subtasksList.isEmpty()) {
-            this.setStatus(Status.NEW);
+            return Status.NEW;
         } else {
-            this.setStatus(Status.IN_PROGRESS);
+            return Status.IN_PROGRESS;
         }
     }
 
-
     @Override
     public String toString() {
-        return "Epic{" + "ID=" + hashCode() + ", name=" + getName() + ", description=" + getDescription() +
-                ", status=" + getStatus();
+        return "Epic{" + " name=" + getName() +
+                ", description='" + getDescription() + '\'' +
+                ", id=" + getId() +
+                ", status=" + getStatus() +
+                '}' + System.lineSeparator();
     }
-
 }
+

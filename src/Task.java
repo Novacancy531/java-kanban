@@ -15,10 +15,6 @@ public class Task {
         this.id = TaskManager.numberOfTasks;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public String getName() {
         return name;
     }
@@ -31,16 +27,21 @@ public class Task {
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object object) {
+        if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Task task = (Task) object;
         return Objects.equals(name, task.name) && Objects.equals(description, task.description);
@@ -53,10 +54,11 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" + "ID=" + getId() +
-                ", name='" + name + '\'' +
-                "description='" + description + '\'' +
+        return "Task{" +
+                " name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
                 ", status=" + status +
-                '}';
+                '}' + System.lineSeparator();
     }
 }

@@ -3,35 +3,28 @@ import java.util.HashMap;
 
 public class TaskManager {
 
-    // Не забыть вернуть приват.
-     static HashMap<Integer, Object> tasks = new HashMap<>();
-      static HashMap<Integer, Object> subtasks = new HashMap<>();
-     static HashMap<Integer, Object> epics =new HashMap<>();
+    TaskManager(){}
+
+    static HashMap<Integer, Object> tasks = new HashMap<>();
+    static HashMap<Integer, Object> subtasks = new HashMap<>();
+    static HashMap<Integer, Object> epics = new HashMap<>();
     protected static int numberOfTasks = 0;
 
-    public static HashMap<Integer, Object> getSubtasks() {
-        return subtasks;
+    static HashMap<Integer, Object> getAllTasks() { // Пункт А: Получение списка задач.
+        HashMap<Integer, Object> allTasks = new HashMap<>();
+        allTasks.putAll(tasks);
+        allTasks.putAll(subtasks);
+        allTasks.putAll(epics);
+        return allTasks;
     }
 
-    // Пункт А: Получение списка всех задач.
-    static HashMap getList () {
-        HashMap<Integer, Object> getList = new HashMap<>();
-        getList.putAll(tasks);
-        getList.putAll(subtasks);
-        getList.putAll(epics);
-        return getList;
-    }
-
-    // Пункт B: Удаление всех задач.
-    static void clearAll() {
+    static void removeAllTasks() { // Пункт B: Удаление всех задач.
         tasks.clear();
         subtasks.clear();
         epics.clear();
-        numberOfTasks = 0;
     }
 
-    // Пункт C: Получение по идентификатору.
-    static Object getById(int id) {
+    static Object getTaskById(int id) { // Пункт C: Получение по идентификатору.
         if (tasks.containsKey(id)) {
             return tasks.get(id);
         } else if (subtasks.containsKey(id)) {
@@ -42,60 +35,77 @@ public class TaskManager {
         return null;
     }
 
-    // Пункт D: Создание задач/эпиков/подзадач.
-    static void addTask(Object object, Epic epic) {
-        if (object.getClass() == Task.class) {
-            tasks.put(object.hashCode(), object);
-        } else if (object.getClass() == Subtask.class) {
-            subtasks.put(object.hashCode(), object);
-            ((Subtask) object).setEpicID(epic.getId());
-            epic.addSubtask((Subtask) object);
-            epic.checkEpicStatus();
-        } else if (object.getClass() == Epic.class) {
-            epics.put(object.hashCode(), object);
-        }
+    static void addTask(Task task) {  // Пункт D: Создание 1/3.
+        tasks.put(task.hashCode(), task);
     }
 
-    // Пункт F: Удаление по идентификатору.
-    static void deleteTask(int id) {
+    static void addTask(Subtask subtask, Epic epic) { // Пункт D: Создание 2/3.
+        subtasks.put(subtask.hashCode(), subtask);
+        subtask.setEpicId(epic.hashCode());
+        epic.getSubtasksList().add(subtask.hashCode());
+        updateStatus(epic);
+    }
+
+    static void addTask(Epic epic) { // Пункт D: Создание 3/3.
+        epics.put(epic.hashCode(), epic);
+        updateStatus(epic);
+    }
+
+    static void updateTask(Task task, int id) { // Пункт E: Обновление 1/3.
+        tasks.replace(id, task);
+        task.setId(id);
+    }
+
+    static void updateTask(Subtask subtask, int id) { // Пункт E: Обновление 2/3.
+        Subtask temporarySubtask = (Subtask) subtasks.get(id);
+        Epic temporaryEpic = (Epic) epics.get(temporarySubtask.getEpicId());
+        subtasks.replace(id, subtask);
+        subtask.setId(id);
+        updateStatus(temporaryEpic);
+    }
+
+    static void updateTask(Epic epic, int id) { // Пункт E: Обновление 3/3.
+        Epic temporaryEpic = (Epic) epics.get(id);
+        epic.setSubtasksList(temporaryEpic.getSubtasksList());
+        epics.replace(id, epic);
+        epic.setId(id);
+        updateStatus(epic);
+    }
+
+    static void deleteTaskById(int id) { // Пункт F: Удаление по идентификатору.
         if (tasks.containsKey(id)) {
             tasks.remove(id);
         } else if (subtasks.containsKey(id)) {
             Subtask subtask = (Subtask) subtasks.get(id);
-            Epic epic = (Epic) epics.get(subtask.getEpicID());
-            epic.subtasksList.remove(Integer.valueOf(id));
-            epic.checkEpicStatus();
+            Epic epic = (Epic) epics.get(subtask.getEpicId());
+            epic.getSubtasksList().remove(epic.getSubtasksList().indexOf(id));
             subtasks.remove(id);
+            updateStatus(epic);
         } else if (epics.containsKey(id)) {
-            deleteEpicSubtasks((Epic) epics.get(id));
+            Epic epic = (Epic) epics.get(id);
+            ArrayList<Integer> subtasks = epic.getSubtasksList();
+            for (int taskId : subtasks) {
+                subtasks.remove(subtasks.indexOf(taskId));
+            }
             epics.remove(id);
         }
-
     }
 
-    static void deleteEpicSubtasks(Epic epic) {
-        ArrayList<Integer> subtasksDeleteList = epic.getSubtasksList();
-            for (int id : subtasksDeleteList) {
-                subtasks.remove(id);
-            }
+    static void updateStatus(Epic epic) {
+        if (epic.getSubtasksList().isEmpty()) {
+            epic.setStatus(Status.NEW);
+        } else {
+            epic.setStatus(epic.checkEpicStatus());
+        }
     }
 
-    static void updateTask(int id, Object object) {
-        if (object.getClass() == Task.class) {
-            tasks.replace(id, object);
-            ((Task) object).setId(id);
-        } else if (object.getClass() == Subtask.class) {
-            subtasks.replace(id, object);
-            ((Subtask) object).setId(id);
-        } /*else if (object.getClass() == Subtask.class) {
-            subtasks.put(object.hashCode(), object);
-            ((Subtask) object).setEpicID(epic.getId());
-            epic.addSubtask((Subtask) object);
-            epic.checkEpicStatus();
-        }*/
+    static HashMap<Integer, Object> getTaskFromEpic(Epic epic){ // Пункт 3A: Получение списка подзадач эпика.
+        HashMap<Integer, Object> tasksFromEpic = new HashMap<>();
+        for (int id: epic.getSubtasksList()) {
+            tasksFromEpic.put(id, subtasks.get(id));
+        }
+        return tasksFromEpic;
     }
-
-
-
-
 }
+
+
