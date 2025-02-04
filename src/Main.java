@@ -25,8 +25,8 @@ public class Main {
 
 
         TaskManager.updateTask(taskUpdater1, 1);
-       // TaskManager.updateTask(subtaskUpdater, 1);
-       // TaskManager.updateTask(epicUpdater, 2);
+        TaskManager.updateTask(subtaskUpdater, 7);
+        TaskManager.updateTask(epicUpdater, 6);
 
         System.out.println(TaskManager.getAllTasks());
 
