@@ -1,9 +1,13 @@
+import java.util.Objects;
+
 public class Subtask extends Task {
 
     private int epicId;
 
-    Subtask(String name, String description, Status status) {
+
+    public Subtask(String name, String description, Status status, int epicId) {
         super(name, description, status);
+        this.epicId = epicId;
     }
 
     public int getEpicId() {
@@ -19,7 +23,20 @@ public class Subtask extends Task {
         return "Subtask{" + " name=" + getName() +
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
-                ", status=" + getStatus() +
+                ", status=" + getStatus() + ", epicId" + getEpicId() +
                 '}' + System.lineSeparator();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Task task = (Task) object;
+        return getId() == task.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

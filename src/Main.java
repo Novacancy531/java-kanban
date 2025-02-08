@@ -3,32 +3,34 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        Task taskFirst = new Task("Завтрак", "Позавтракать", Status.IN_PROGRESS);
-        Task taskSecond = new Task("Обед", "Пообедать", Status.DONE);
+        Task taskFirst = new Task("Завтрак", "Позавтракать", Status.DONE);
+        Task taskSecond = new Task("Обед", "Пообедать", Status.IN_PROGRESS);
         Epic epicFirst = new Epic("Ужин", "Поужинать");
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE);
-        Subtask subtaskSecond = new Subtask("Пить", "Пить компот", Status.IN_PROGRESS);
+        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE, 3);
+        Subtask subtaskSecond = new Subtask("Пить", "Пить компот", Status.IN_PROGRESS, 3);
         Epic epicSecond = new Epic("Полдник", "Полдничать");
-        Subtask subtaskThird = new Subtask("Есть", "Есть печенье", Status.NEW);
+        Subtask subtaskThird = new Subtask("Есть", "Есть печенье", Status.IN_PROGRESS, 6);
 
-        TaskManager.addTask(taskFirst);
-        TaskManager.addTask(taskSecond);
-        TaskManager.addTask(epicFirst);
-        TaskManager.addTask(subtaskFirst, epicFirst);
-        TaskManager.addTask(subtaskSecond, epicFirst);
-        TaskManager.addTask(epicSecond);
-        TaskManager.addTask(subtaskThird, epicSecond);
+        TaskManager taskManager = new TaskManager();
 
-        Task taskUpdater1 = new Task ("Первое", "первое обновление", Status.DONE);
-        Subtask subtaskUpdater = new Subtask("Второе", "второе обновление", Status.DONE);
-        Epic epicUpdater = new Epic("Третье", "Третье обновление");
+        taskManager.addTask(taskFirst);
+        taskManager.addTask(taskSecond);
+        taskManager.addEpic(epicFirst);
+        taskManager.addSubtask(subtaskFirst);
+        taskManager.addSubtask(subtaskSecond);
+        taskManager.addEpic(epicSecond);
+        taskManager.addSubtask(subtaskThird);
+
+        taskManager.deleteEpicById(6);
+
+        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getSubtasks());
 
 
-        TaskManager.updateTask(taskUpdater1, 1);
-        TaskManager.updateTask(subtaskUpdater, 7);
-        TaskManager.updateTask(epicUpdater, 6);
 
-        System.out.println(TaskManager.getAllTasks());
+
+
+
 
     }
 }

@@ -7,12 +7,11 @@ public class Task {
     private int id;
     private Status status;
 
-    Task(String name, String description, Status status) {
+
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
-        TaskManager.numberOfTasks++;
-        this.id = TaskManager.numberOfTasks;
     }
 
     public String getName() {
@@ -44,12 +43,12 @@ public class Task {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Task task = (Task) object;
-        return Objects.equals(name, task.name) && Objects.equals(description, task.description);
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return id;
+        return Objects.hash(id);
     }
 
     @Override
