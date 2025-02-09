@@ -40,12 +40,7 @@ public class TaskManager {
     }
 
     public void removeAllEpics() {
-        for (Epic epic : epics.values()) {
-            List<Integer> temporaryList = epic.getSubtasksList();
-            for (Integer subtaskId : temporaryList) {
-                subtasks.remove(subtaskId);
-            }
-        }
+        subtasks.clear();
         epics.clear();
     }
 
@@ -156,12 +151,13 @@ public class TaskManager {
         List<Integer> temporaryList = epic.getSubtasksList();
         for (int id : temporaryList) {
             Subtask subtask = subtasks.get(id);
-            if (subtask.getStatus() == Status.DONE) {
-                resultDone++;
+            if (subtask.getStatus() == Status.IN_PROGRESS) {
+                epic.setStatus(Status.IN_PROGRESS);
+                return;
             } else if (subtask.getStatus() == Status.NEW) {
                 resultNew++;
-            } else if (subtask.getStatus() == Status.IN_PROGRESS) {
-                epic.setStatus(Status.IN_PROGRESS);
+            } else if (subtask.getStatus() == Status.DONE) {
+                resultDone++;
             }
         }
         if (resultNew == temporaryList.size() || temporaryList.isEmpty()) {
