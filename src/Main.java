@@ -1,3 +1,7 @@
+import managers.*;
+import enums.*;
+import tasksObjects.*;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -11,26 +15,19 @@ public class Main {
         Epic epicSecond = new Epic("Полдник", "Полдничать");
         Subtask subtaskThird = new Subtask("Есть", "Есть печенье", Status.IN_PROGRESS, 6);
 
-        TaskManager taskManager = new TaskManager();
+        InMemoryTaskManager manager = new InMemoryTaskManager();
 
-        taskManager.addTask(taskFirst);
-        taskManager.addTask(taskSecond);
-        taskManager.addEpic(epicFirst);
-        taskManager.addSubtask(subtaskFirst);
-        taskManager.addSubtask(subtaskSecond);
-        taskManager.addEpic(epicSecond);
-        taskManager.addSubtask(subtaskThird);
+        manager.addTask(taskFirst);
+        manager.addTask(taskSecond);
+        manager.addEpic(epicFirst);
+        manager.addSubtask(subtaskFirst);
+        manager.addSubtask(subtaskSecond);
+        manager.addEpic(epicSecond);
+        manager.addSubtask(subtaskThird);
 
-        taskManager.deleteSubtaskById(4);
+        manager.receivingTaskById(2);
+        manager.receivingEpicById(6);
 
-        System.out.println(taskManager.getEpics());
-        System.out.println(taskManager.getSubtasks());
-
-
-
-
-
-
-
+        System.out.println(manager.getHistory());
     }
 }

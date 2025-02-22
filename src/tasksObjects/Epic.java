@@ -1,3 +1,7 @@
+package tasksObjects;
+
+import enums.Status;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +25,12 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" + " name=" + getName() +
+        return "tasksObjects.Epic{" + " name=" + getName() +
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
                 ", status=" + getStatus() +
                 '}' + System.lineSeparator();
     }
 }
+
 

@@ -1,3 +1,7 @@
+package tasksObjects;
+
+import enums.Status;
+
 public class Subtask extends Task {
 
     private int epicId;
@@ -18,7 +22,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" + " name=" + getName() +
+        return "tasksObjects.Subtask{" + " name=" + getName() +
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
                 ", status=" + getStatus() + ", epicId" + getEpicId() +
