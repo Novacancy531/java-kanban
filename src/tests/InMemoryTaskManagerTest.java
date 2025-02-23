@@ -4,7 +4,7 @@ import managers.InMemoryTaskManager;
 import enums.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasksObjects.*;
+import tasks.*;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;

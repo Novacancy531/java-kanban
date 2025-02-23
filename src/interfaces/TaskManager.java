@@ -1,8 +1,8 @@
 package interfaces;
 
-import tasksObjects.Epic;
-import tasksObjects.Subtask;
-import tasksObjects.Task;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
 
 import java.util.List;
 

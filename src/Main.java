@@ -1,6 +1,6 @@
 import managers.*;
 import enums.*;
-import tasksObjects.*;
+import tasks.*;
 
 public class Main {
 

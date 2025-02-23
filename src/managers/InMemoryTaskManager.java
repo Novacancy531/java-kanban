@@ -2,19 +2,20 @@ package managers;
 
 import enums.*;
 import interfaces.*;
-import tasksObjects.*;
+import tasks.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HashMap<Integer, Task> tasks;
-    private final HashMap<Integer, Subtask> subtasks;
-    private final HashMap<Integer, Epic> epics;
+    private final Map<Integer, Task> tasks;
+    private final Map<Integer, Subtask> subtasks;
+    private final Map<Integer, Epic> epics;
     private int numberOfTasks = 0;
-    private final InMemoryHistoryManager historyManager;
+    private final HistoryManager historyManager;
 
 
     public InMemoryTaskManager() {
@@ -53,7 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Subtask subtask : subtasks.values()) {
             Epic currentEpic = epics.get(subtask.getEpicId());
             List<Integer> temporaryList = currentEpic.getSubtasksList();
-            temporaryList.remove(temporaryList.indexOf(subtask.getId()));
+            temporaryList.clear();
             updateEpicStatus(currentEpic);
         }
         subtasks.clear();

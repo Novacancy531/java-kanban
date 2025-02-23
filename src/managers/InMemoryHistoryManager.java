@@ -1,7 +1,7 @@
 package managers;
 
 import interfaces.*;
-import tasksObjects.*;
+import tasks.*;
 
 import java.util.ArrayList;
 import java.util.List;
