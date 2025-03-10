@@ -1,4 +1,4 @@
-package tests;
+package test.managers;
 
 import managers.Managers;
 import interfaces.*;

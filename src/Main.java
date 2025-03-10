@@ -27,6 +27,11 @@ public class Main {
 
         manager.receivingTaskById(2);
         manager.receivingEpicById(6);
+        manager.receivingTaskById(1);
+        System.out.println(manager.getHistory());
+
+        manager.receivingSubtaskById(4);
+        manager.receivingSubtaskById(5);
 
         System.out.println(manager.getHistory());
     }
