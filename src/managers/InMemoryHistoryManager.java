@@ -1,7 +1,3 @@
-/**
- * Класс предназначен для работы с
- * историей просмотров задач менеджера задач.
- */
 package managers;
 
 import interfaces.HistoryManager;

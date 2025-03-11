@@ -1,14 +1,15 @@
 package test.managers;
 
 import managers.Managers;
-import interfaces.*;
+import interfaces.TaskManager;
+import interfaces.HistoryManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ManagersTest {
 
     @Test
-    void getDefault () {
+    void getDefault() {
         TaskManager manager = Managers.getDefault();
 
         Assertions.assertNotNull(manager);

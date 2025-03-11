@@ -12,7 +12,7 @@ import java.util.List;
 
 class InMemoryTaskManagerTest {
 
-    public InMemoryTaskManager manager;
+    private InMemoryTaskManager manager;
 
 
     @BeforeEach
@@ -265,9 +265,9 @@ class InMemoryTaskManagerTest {
         subtaskFirst.setId(3);
         subtaskSecond.setId(3);
 
-        Assertions.assertTrue(taskFirst.equals(taskSecond), "Задачи не равны");
-        Assertions.assertTrue(epicFirst.equals(epicSecond), "Эпики не равны");
-        Assertions.assertTrue(subtaskFirst.equals(subtaskSecond), "Подзадачи не равны");
+        Assertions.assertEquals(taskFirst, taskSecond, "Задачи не равны");
+        Assertions.assertEquals(epicFirst, epicSecond, "Эпики не равны");
+        Assertions.assertEquals(subtaskFirst, subtaskSecond, "Подзадачи не равны");
     }
 
     @Test
