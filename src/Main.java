@@ -27,7 +27,7 @@ public class Main {
 
         manager.deleteSubtaskById(5);
 
-        /*
+
         manager.receivingTaskById(2);
         manager.receivingEpicById(6);
         manager.receivingTaskById(1);
@@ -37,6 +37,6 @@ public class Main {
         manager.receivingSubtaskById(5);
 
         System.out.println(manager.getHistory());
-         */
+
     }
 }

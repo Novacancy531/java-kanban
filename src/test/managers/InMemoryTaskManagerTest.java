@@ -302,6 +302,6 @@ class InMemoryTaskManagerTest {
         manager.updateTask(taskSecond);
 
         Assertions.assertEquals(temp, manager.getHistory(), "Старое значение не сохранилось");
-        Assertions.assertFalse(manager.getHistory().isEmpty(),"История пустая");
+        Assertions.assertFalse(manager.getHistory().isEmpty(), "История пустая");
     }
 }

@@ -3,8 +3,8 @@ package managers;
 import interfaces.HistoryManager;
 import tasks.Task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class InMemoryHistoryManager implements HistoryManager {
@@ -55,7 +55,7 @@ public final class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        ArrayList<Task> tempList = new ArrayList<>();
+        LinkedList<Task> tempList = new LinkedList<>();
 
         Node<Task> current = head;
         while (current != null) {
