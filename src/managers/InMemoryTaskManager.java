@@ -46,8 +46,6 @@ public final class InMemoryTaskManager implements TaskManager {
         historyManager = new InMemoryHistoryManager();
     }
 
-    // Пункт А: Получение списка всех задач.
-
     @Override
     public List<Task> getTasks() {
         return new ArrayList<>(tasks.values());
@@ -62,8 +60,6 @@ public final class InMemoryTaskManager implements TaskManager {
     public List<Task> getEpics() {
         return new ArrayList<>(epics.values());
     }
-
-    // Пункт B: Удаление всех задач.
 
     @Override
     public void removeAllTasks() {
@@ -87,8 +83,6 @@ public final class InMemoryTaskManager implements TaskManager {
         epics.clear();
     }
 
-    // Пункт C: Получение по идентификатору.
-
     @Override
     public Task receivingTaskById(final int id) {
         historyManager.add(tasks.get(id));
@@ -106,8 +100,6 @@ public final class InMemoryTaskManager implements TaskManager {
         historyManager.add(epics.get(id));
         return epics.get(id);
     }
-
-    // Пункт D: Создание.
 
     @Override
     public void addTask(final Task task) {
@@ -133,8 +125,6 @@ public final class InMemoryTaskManager implements TaskManager {
         epics.put(epic.getId(), epic);
         updateEpicStatus(epic);
     }
-
-    // Пункт E: Обновление.
 
     @Override
     public void updateTask(final Task task) {
@@ -164,8 +154,6 @@ public final class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // Пункт F: Удаление по идентификатору.
-
     @Override
     public void deleteTaskById(final int id) {
         tasks.remove(id);
@@ -189,9 +177,6 @@ public final class InMemoryTaskManager implements TaskManager {
         }
         epics.remove(id);
     }
-
-
-    // Пункт 3A: Получение списка подзадач эпика.
 
     @Override
     public List<Subtask> getSubtasksFromEpic(final Epic epic) {
@@ -232,5 +217,3 @@ public final class InMemoryTaskManager implements TaskManager {
         }
     }
 }
-
-

@@ -2,9 +2,7 @@ package test.managers;
 
 import enums.Status;
 import interfaces.HistoryManager;
-import interfaces.TaskManager;
 import managers.InMemoryHistoryManager;
-import managers.InMemoryTaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,7 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -62,6 +60,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void add() {
+        final int historySize = 3;
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(epic);
@@ -74,10 +73,9 @@ class InMemoryHistoryManagerTest {
         Assertions.assertEquals(epic, historyManager.getHistory().get(2),
                 "Большая задача 1 не попала в историю.");
 
-
         historyManager.add(task2);
 
-        Assertions.assertEquals(3, historyManager.getHistory().size(),
+        Assertions.assertEquals(historySize, historyManager.getHistory().size(),
                 "Размер истории после замены изменился.");
         Assertions.assertEquals(task2, historyManager.getHistory().get(2),
                 "Задача 1 не на своем месте.");
@@ -89,17 +87,31 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void remove() {
+        historyManager.add(task1);
+        historyManager.add(task2);
+
+        historyManager.remove(1);
+
+        Assertions.assertEquals(1, historyManager.getHistory().size(),
+                "Размер истории после удаления не изменился.");
+        Assertions.assertEquals(task2, historyManager.getHistory().getFirst(),
+                "Ожидалась другая задача.");
     }
 
     @Test
     void getHistory() {
-    }
+        historyManager.add(epic);
+        historyManager.add(subtask1);
+        historyManager.add(subtask2);
 
-    @Test
-    void addLinkLast() {
-    }
+        List<Task> reference = new ArrayList<>();
+        reference.add(epic);
+        reference.add(subtask1);
+        reference.add(subtask2);
 
-    @Test
-    void removeNode() {
+        Assertions.assertNotNull(historyManager.getHistory(),
+                "История пустая.");
+        Assertions.assertEquals(reference, historyManager.getHistory(),
+                "Неправильный вывод истории.");
     }
 }

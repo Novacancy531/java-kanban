@@ -1,307 +1,253 @@
 package test.managers;
 
+import interfaces.TaskManager;
 import managers.InMemoryTaskManager;
 import enums.Status;
+import tasks.Task;
+import tasks.Subtask;
+import tasks.Epic;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasks.*;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 class InMemoryTaskManagerTest {
 
-    private InMemoryTaskManager manager;
+    /**
+     * Поле менеджера истории.
+     */
+    private TaskManager taskManager;
+    /**
+     * Задача 1.
+     */
+    private Task task1;
+    /**
+     * Задача 2.
+     */
+    private Task task2;
+    /**
+     * Большая задача 1.
+     */
+    private Epic epic;
+    /**
+     * Подзадача 1.
+     */
+    private Subtask subtask1;
+    /**
+     * Подзадача 2.
+     */
+    private Subtask subtask2;
 
 
     @BeforeEach
-    public void beforeEach() {
-
-        manager = new InMemoryTaskManager();
+    public void setUp() {
+        taskManager = new InMemoryTaskManager();
+        task1 = new Task("1", "Задача 1", Status.NEW);
+        task2 = new Task("2", "Задача 2", Status.NEW);
+        epic = new Epic("3", "Большая задача 3");
+        subtask1 = new Subtask("4", "Задача 4", Status.NEW, 1);
+        subtask2 = new Subtask("5", "Задача 5", Status.NEW, 1);
     }
 
 
     @Test
     void getTasks() {
-        ArrayList<Task> list = new ArrayList<>();
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
 
-        Task taskFirst = new Task("Завтрак", "Позавтракать", Status.DONE);
-        Task taskSecond = new Task("Обед", "Пообедать", Status.IN_PROGRESS);
-        taskFirst.setId(1);
-        taskSecond.setId(2);
-        list.add(taskFirst);
-        list.add(taskSecond);
+        List<Task> reference = new ArrayList<>();
+        reference.add(task1);
+        reference.add(task2);
 
-        manager.addTask(new Task("Завтрак", "Позавтракать", Status.DONE));
-        manager.addTask(new Task("Обед", "Пообедать", Status.IN_PROGRESS));
-
-        Assertions.assertEquals(list, manager.getTasks(), "Списки не равны");
+        Assertions.assertEquals(2, taskManager.getTasks().size(),
+                "Ожидалось другое количество задач.");
+        Assertions.assertEquals(reference, taskManager.getTasks(), "Список отличается от эталонного");
     }
 
     @Test
     void getSubtasks() {
-        ArrayList<Task> list = new ArrayList<>();
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
 
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE, 3);
-        Subtask subtaskSecond = new Subtask("Пить", "Пить компот", Status.IN_PROGRESS, 3);
-        subtaskFirst.setId(2);
-        subtaskSecond.setId(3);
-        list.add(subtaskFirst);
-        list.add(subtaskSecond);
+        List<Task> reference = new ArrayList<>();
+        reference.add(subtask1);
+        reference.add(subtask2);
 
-        manager.addEpic(epicFirst);
-        manager.addSubtask(new Subtask("Есть", "Есть гречку", Status.DONE, 1));
-        manager.addSubtask(new Subtask("Пить", "Пить компот", Status.IN_PROGRESS, 1));
-
-        Assertions.assertEquals(list, manager.getSubtasks(), "Списки не равны");
+        Assertions.assertEquals(2, reference.size(), "Ожидалось другое количество подзадач");
+        Assertions.assertEquals(reference, taskManager.getSubtasks(), "Список отличается от эталонного");
     }
 
     @Test
     void getEpics() {
-        ArrayList<Epic> list = new ArrayList<>();
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        epicFirst.setId(1);
-        list.add(epicFirst);
+        taskManager.addEpic(epic);
+        List<Task> reference = new ArrayList<>();
 
-        manager.addEpic(new Epic("Ужин", "Поужинать"));
+        reference.add(epic);
 
-        Assertions.assertEquals(list, manager.getEpics());
+        Assertions.assertEquals(reference, taskManager.getEpics(), "Эпик добавился не верно");
     }
 
     @Test
     void removeAllTasks() {
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
 
-        manager.addTask(new Task("Завтрак", "Позавтракать", Status.DONE));
-        manager.addTask(new Task("Обед", "Пообедать", Status.IN_PROGRESS));
-        manager.removeAllTasks();
+        taskManager.removeAllTasks();
 
-        Assertions.assertTrue(manager.getTasks().isEmpty(), "Список задач не пустой");
+        Assertions.assertTrue(taskManager.getTasks().isEmpty(), "Список задач не пуст");
     }
 
     @Test
     void removeAllSubtasks() {
+        taskManager.addEpic(epic);
 
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        epicFirst.setId(1);
-        manager.addEpic(epicFirst);
-        manager.addSubtask(new Subtask("Есть", "Есть гречку", Status.DONE, 1));
-        manager.addSubtask(new Subtask("Пить", "Пить компот", Status.IN_PROGRESS, 1));
-        manager.removeAllSubtasks();
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
+        taskManager.removeAllSubtasks();
 
-        Assertions.assertTrue(manager.getSubtasks().isEmpty(), "Список подзадач не пустой");
-        Assertions.assertTrue(manager.getSubtasksFromEpic(epicFirst).isEmpty(), "Остались в списке эпика");
+        Assertions.assertTrue(taskManager.getSubtasks().isEmpty(), "Список подзадач не пустой");
+        Assertions.assertTrue(taskManager.getSubtasksFromEpic(epic).isEmpty(),
+                "Задачи остались в списке большой задачи");
     }
 
     @Test
     void removeAllEpics() {
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
 
-        manager.addEpic(new Epic("Ужин", "Поужинать"));
-        manager.addSubtask(new Subtask("Есть", "Есть гречку", Status.DONE, 1));
-        manager.addSubtask(new Subtask("Пить", "Пить компот", Status.IN_PROGRESS, 1));
+        taskManager.removeAllEpics();
 
-        manager.removeAllEpics();
-
-        Assertions.assertTrue(manager.getEpics().isEmpty(), "Список эпиков не пуст");
-        Assertions.assertTrue(manager.getSubtasks().isEmpty(), "Список подзадач не пуст");
+        Assertions.assertTrue(taskManager.getEpics().isEmpty(), "Список эпиков не пуст");
+        Assertions.assertTrue(taskManager.getSubtasks().isEmpty(), "Список подзадач не пуст");
     }
 
     @Test
     void receivingById() {
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
 
-        manager.addTask(new Task("Завтрак", "Позавтракать", Status.DONE));
-        manager.addEpic(new Epic("Ужин", "Поужинать"));
-        manager.addSubtask(new Subtask("Есть", "Есть гречку", Status.DONE, 2));
-
-        Assertions.assertEquals(1, manager.receivingTaskById(1).getId(), "id задач не равен");
-        Assertions.assertEquals(2, manager.receivingEpicById(2).getId(), "id 'эпика не верный");
-        Assertions.assertEquals(3, manager.receivingSubtaskById(3).getId(), "id подзадач не верный");
+        Assertions.assertEquals(1, taskManager.receivingEpicById(1).getId(),
+                "id большой задачи не равен");
+        Assertions.assertEquals(2, taskManager.receivingSubtaskById(2).getId(),
+                "id подзадачи не верный");
     }
 
     @Test
     void addTask() {
+        taskManager.addTask(task1);
 
-        Task firstTask = new Task("Завтрак", "Позавтракать", Status.DONE);
-        firstTask.setId(1);
-        manager.addTask(new Task("Завтрак", "Позавтракать", Status.DONE));
-
-        Assertions.assertEquals(manager.receivingTaskById(1), firstTask, "Задача добавилась неверно");
+        Assertions.assertEquals(task1, taskManager.receivingTaskById(1), "Задача добавилась неверно");
     }
 
     @Test
     void addSubtask() {
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
+        int subtaskId = epic.getSubtasksList().getFirst();
 
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE, 1);
 
-        epicFirst.setId(1);
-        subtaskFirst.setId(2);
-
-        manager.addEpic(new Epic("Ужин", "Поужинать"));
-        manager.addSubtask(new Subtask("Есть", "Есть гречку", Status.DONE, 1));
-        int subtaskId = manager.receivingEpicById(1).getSubtasksList()
-                .get(manager.receivingEpicById(1).getSubtasksList().indexOf(2));
-
-        Assertions.assertEquals(subtaskFirst, manager.receivingSubtaskById(2), "Подзадача добавилась неверно");
-        Assertions.assertEquals(2, subtaskId, "Неверно добавился номер подзадачи в эпик");
+        Assertions.assertEquals(subtask1, taskManager.receivingSubtaskById(2), "Подзадача добавилась неверно");
+        Assertions.assertEquals(2, subtaskId, "Неверно добавился номер подзадачи в большую задачу");
     }
 
     @Test
     void addEpic() {
+        taskManager.addEpic(epic);
 
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        epicFirst.setId(1);
-        manager.addEpic(new Epic("Ужин", "Поужинать"));
-
-        Assertions.assertEquals(epicFirst, manager.receivingEpicById(1), "Эпик добавился неверно");
+        Assertions.assertEquals(epic, taskManager.receivingEpicById(1), "Большая задача добавилась неверно");
     }
 
     @Test
     void updateTask() {
+        taskManager.addTask(task1);
+        task1.setStatus(Status.IN_PROGRESS);
+        taskManager.updateTask(task1);
 
-        Task firstTask = new Task("Завтрак", "Позавтракать", Status.DONE);
-        firstTask.setId(1);
-
-        manager.addTask(new Task("Завтрак", "Позавтракать", Status.IN_PROGRESS));
-        manager.updateTask(firstTask);
-
-        Assertions.assertEquals(firstTask, manager.receivingTaskById(1), "Задача обновилась неверно");
+        Assertions.assertEquals(task1, taskManager.receivingTaskById(1), "Задача обновилась неверно");
     }
 
     @Test
     void updateSubtask() {
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
+        subtask1.setStatus(Status.IN_PROGRESS);
+        taskManager.updateSubtask(subtask1);
 
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE, 1);
-        subtaskFirst.setId(2);
-
-        manager.addEpic(new Epic("Ужин", "Поужинать"));
-        manager.addSubtask(new Subtask("Есть", "Есть гречку", Status.NEW, 1));
-        manager.updateSubtask(subtaskFirst);
-
-        Assertions.assertEquals(subtaskFirst, manager.receivingSubtaskById(2), "Подзадача обновилась неверно");
+        Assertions.assertEquals(subtask1, taskManager.receivingSubtaskById(2), "Подзадача обновилась неверно");
 
     }
 
     @Test
     void updateEpic() {
+        taskManager.addEpic(epic);
+        Epic tempEpic = new Epic("2", "Задача 2");
+        tempEpic.setId(1);
+        taskManager.updateEpic(tempEpic);
 
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        epicFirst.setId(1);
-
-        manager.addEpic(new Epic("Полдник", "Полдничать"));
-        manager.updateEpic(epicFirst);
-
-        Assertions.assertEquals(epicFirst, manager.receivingEpicById(1), "Эпик обновился неверно");
+        Assertions.assertEquals(1, taskManager.getEpics().size(),
+                "Задача не обновилась");
+        Assertions.assertEquals(tempEpic, taskManager.getEpics().getFirst(), "Задача не обновилась");
     }
 
     @Test
     void deleteById() {
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
+        taskManager.addTask(task1);
 
-        Task taskFirst = new Task("Завтрак", "Позавтракать", Status.DONE);
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE, 2);
+        taskManager.deleteTaskById(task1.getId());
+        taskManager.deleteSubtaskById(subtask1.getId());
+        taskManager.deleteEpicById(epic.getId());
 
-        manager.addTask(taskFirst);
-        manager.addEpic(epicFirst);
-        manager.addSubtask(subtaskFirst);
-        manager.deleteTaskById(1);
-        manager.deleteSubtaskById(3);
-        manager.deleteEpicById(2);
-        Assertions.assertNull(manager.receivingTaskById(1), "Задача не удалилась");
-        Assertions.assertNull(manager.receivingSubtaskById(2), "Подзадача не удалилась");
-        Assertions.assertNull(manager.receivingEpicById(3), "Эпик не удалился");
+        Assertions.assertFalse(taskManager.getTasks().contains(epic), "Задача не удалилась");
+        Assertions.assertFalse(taskManager.getSubtasks().contains(subtask1), "Подзадача не удалилась");
+        Assertions.assertFalse(taskManager.getEpics().contains(task1), "Большая задача не удалилась");
     }
 
     @Test
     void getSubtasksFromEpic() {
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
 
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE, 1);
-        Subtask subtaskSecond = new Subtask("Пить", "Пить компот", Status.IN_PROGRESS, 1);
-        subtaskFirst.setId(2);
-        subtaskSecond.setId(3);
+        List<Integer> reference = new ArrayList<>(List.of(subtask1.getId(), subtask2.getId()));
 
-        List<Integer> temp = new ArrayList<>();
-        temp.add(2);
-        temp.add(3);
-
-        manager.addEpic(epicFirst);
-        manager.addSubtask(subtaskFirst);
-        manager.addSubtask(subtaskSecond);
-
-        Assertions.assertEquals(temp, manager.receivingEpicById(1).getSubtasksList(), "Списки не равны");
+        Assertions.assertEquals(reference, epic.getSubtasksList(), "Списки не равны");
     }
 
     @Test
     void updateEpicStatus() {
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.NEW, 1);
-        Subtask subtaskSecond = new Subtask("Есть", "Есть гречку", Status.DONE, 1);
-        subtaskSecond.setId(2);
+        taskManager.addEpic(epic);
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
 
-        manager.addEpic(epicFirst);
-        manager.addSubtask(subtaskFirst);
-        manager.updateSubtask(subtaskSecond);
+        subtask1.setStatus(Status.DONE);
+        taskManager.updateSubtask(subtask1);
 
-        Assertions.assertEquals(Status.DONE, manager.receivingEpicById(1).getStatus(), "Неверный статус");
+        Assertions.assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Неверный статус");
     }
 
     @Test
     void equalityOfTasksBYiD() {
+        task1.setId(1);
+        task2.setId(1);
 
-        Task taskFirst = new Task("Завтрак", "Позавтракать", Status.DONE);
-        Task taskSecond = new Task("Обед", "Пообедать", Status.IN_PROGRESS);
-        taskFirst.setId(1);
-        taskSecond.setId(1);
-
-        Epic epicFirst = new Epic("Ужин", "Поужинать");
-        Epic epicSecond = new Epic("Полдник", "Полдничать");
-        epicFirst.setId(2);
-        epicSecond.setId(2);
-
-        Subtask subtaskFirst = new Subtask("Есть", "Есть гречку", Status.DONE, 2);
-        Subtask subtaskSecond = new Subtask("Пить", "Пить компот", Status.IN_PROGRESS, 2);
-        subtaskFirst.setId(3);
-        subtaskSecond.setId(3);
-
-        Assertions.assertEquals(taskFirst, taskSecond, "Задачи не равны");
-        Assertions.assertEquals(epicFirst, epicSecond, "Эпики не равны");
-        Assertions.assertEquals(subtaskFirst, subtaskSecond, "Подзадачи не равны");
+        Assertions.assertEquals(task1, task2, "Задачи не равны");
     }
 
     @Test
     void taskEqualsFromManager() {
+        taskManager.addTask(task1);
+        Task outputTask = taskManager.receivingTaskById(1);
 
-        Task taskFirst = new Task("Завтрак", "Позавтракать", Status.DONE);
-        taskFirst.setId(1);
+        Assertions.assertEquals(task1.getName(), outputTask.getName(), "Имена не равны");
+        Assertions.assertEquals(task1.getDescription(), outputTask.getDescription(), "Описание не равно");
+        Assertions.assertEquals(task1.getStatus(), outputTask.getStatus(), "Статусы не равны");
+        Assertions.assertEquals(task1.getId(), outputTask.getId(), "Идентификаторы  не равны");
 
-        manager.addTask(taskFirst);
-
-        Assertions.assertEquals(taskFirst.getName(), manager.receivingTaskById(1).getName(), "Имена не равны");
-        Assertions.assertEquals(taskFirst.getDescription(), manager.receivingTaskById(1).getDescription(),
-                "Описание не равно");
-        Assertions.assertEquals(taskFirst.getStatus(), manager.receivingTaskById(1).getStatus(),
-                "Статусы не равны");
-        Assertions.assertEquals(taskFirst.getId(), manager.receivingTaskById(1).getId(), "id не равны");
-
-    }
-
-    @Test
-    void historyManagerSaver() {
-
-        Task taskFirst = new Task("Завтрак", "Позавтракать", Status.DONE);
-        Task taskSecond = new Task("Обед", "Пообедать", Status.IN_PROGRESS);
-        taskSecond.setId(1);
-
-        List<Task> temp = new ArrayList<>();
-        temp.add(taskFirst);
-
-        manager.addTask(taskFirst);
-        manager.receivingTaskById(1);
-        manager.updateTask(taskSecond);
-
-        Assertions.assertEquals(temp, manager.getHistory(), "Старое значение не сохранилось");
-        Assertions.assertFalse(manager.getHistory().isEmpty(), "История пустая");
     }
 }
