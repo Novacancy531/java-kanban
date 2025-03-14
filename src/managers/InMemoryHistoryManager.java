@@ -31,6 +31,19 @@ public final class InMemoryHistoryManager implements HistoryManager {
         this.tail = null;
     }
 
+    @Override
+    public List<Task> getHistory() {
+        LinkedList<Task> tempList = new LinkedList<>();
+
+        Node<Task> current = head;
+        while (current != null) {
+            tempList.add(current.data);
+            current = current.next;
+        }
+
+        return tempList;
+    }
+
     /**
      * Метод проверяет есть ли задача в historyList и заменяет ее
      * или добавляет при ее отсутствии ранее.
@@ -49,21 +62,10 @@ public final class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(final int id) {
-        removeNode(historyList.get(id));
-        historyList.remove(id);
-    }
-
-    @Override
-    public List<Task> getHistory() {
-        LinkedList<Task> tempList = new LinkedList<>();
-
-        Node<Task> current = head;
-        while (current != null) {
-            tempList.add(current.data);
-            current = current.next;
+        if (historyList.containsKey(id)) {
+            removeNode(historyList.get(id));
+            historyList.remove(id);
         }
-
-        return tempList;
     }
 
     /**
