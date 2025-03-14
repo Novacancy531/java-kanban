@@ -1,5 +1,3 @@
-package test;
-
 import enums.Status;
 import interfaces.HistoryManager;
 import managers.InMemoryHistoryManager;
@@ -42,7 +40,7 @@ class InMemoryHistoryManagerTest {
     private Subtask subtask2;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         int id = 1;
         historyManager = new InMemoryHistoryManager();
         task1 = new Task("1", "Задача 1", Status.NEW);

@@ -1,5 +1,3 @@
-package test;
-
 import interfaces.TaskManager;
 import managers.InMemoryTaskManager;
 import enums.Status;
@@ -42,7 +40,7 @@ class InMemoryTaskManagerTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         taskManager = new InMemoryTaskManager();
         task1 = new Task("1", "Задача 1", Status.NEW);
         task2 = new Task("2", "Задача 2", Status.NEW);

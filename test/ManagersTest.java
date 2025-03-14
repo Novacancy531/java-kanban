@@ -1,12 +1,10 @@
-package test;
-
 import managers.Managers;
 import interfaces.TaskManager;
 import interfaces.HistoryManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ManagersTest {
+class ManagersTest {
 
     @Test
     void getDefault() {
