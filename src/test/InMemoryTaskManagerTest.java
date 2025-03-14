@@ -1,4 +1,4 @@
-package test.managers;
+package test;
 
 import interfaces.TaskManager;
 import managers.InMemoryTaskManager;
