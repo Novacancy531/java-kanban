@@ -1,6 +1,7 @@
+package managers;
+
 import enums.Status;
 import interfaces.HistoryManager;
-import managers.InMemoryHistoryManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

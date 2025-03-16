@@ -1,4 +1,5 @@
-import managers.Managers;
+package managers;
+
 import interfaces.TaskManager;
 import interfaces.HistoryManager;
 import org.junit.jupiter.api.Assertions;

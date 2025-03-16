@@ -62,9 +62,9 @@ public final class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(final int id) {
-        if (historyList.containsKey(id)) {
-            removeNode(historyList.get(id));
-            historyList.remove(id);
+        Node<Task> node = historyList.remove(id);
+        if (node != null) {
+            removeNode(node);
         }
     }
 
@@ -91,7 +91,7 @@ public final class InMemoryHistoryManager implements HistoryManager {
      *
      * @param node Node который требуется удалить.
      */
-    public void removeNode(final Node<Task> node) {
+    public void removeNode(@SuppressWarnings("ClassEscapesDefinedScope") final Node<Task> node) {
 
         if (node.prev == null) {
             head = node.next;
@@ -108,7 +108,7 @@ public final class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    public static class Node<T> {
+    private static class Node<T> {
         /**
          * Поле для хранения задач.
          */
