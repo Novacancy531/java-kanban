@@ -1,16 +1,27 @@
 package managers;
 
-import interfaces.*;
+import interfaces.TaskManager;
+import interfaces.HistoryManager;
 
-public class Managers {
 
-    private Managers(){}
+public final class Managers {
 
+    private Managers() {
+    }
+
+    /**
+     * Метод для создания менеджера по умолчанию.
+     * @return возвращает менеджер.
+     */
     public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
 
-    public static HistoryManager getDefaultHistory(){
+    /**
+     * Метод для создания менеджера истории по умолчанию.
+     * @return возвращает менеджер истории.
+     */
+    public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 }
