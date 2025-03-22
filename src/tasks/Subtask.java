@@ -1,6 +1,7 @@
 package tasks;
 
 import enums.Status;
+import enums.TaskType;
 
 public final class Subtask extends Task {
 
@@ -13,14 +14,36 @@ public final class Subtask extends Task {
      * Конструктор по умолчанию.
      *
      * @param name        имя задачи.
-     * @param description описание подзадачи.
-     * @param status      статус подзадачи.
-     * @param id          идентификатор большой задачи данной задачи.
+     * @param description описание задачи.
+     * @param status      статус задачи.
+     * @param newEpicId   идентификатор большой задачи данной задачи.
      */
-    public Subtask(final String name, final String description,
-                   final Status status, final int id) {
+    public Subtask(final String name, final String description, final Status status, final int newEpicId) {
         super(name, description, status);
-        this.epicId = id;
+        epicId = newEpicId;
+    }
+
+    /**
+     * @param name        имя задачи.
+     * @param description описание задачи.
+     * @param status      статус задачи.
+     * @param newEpicId   идентификатор большой задачи данной задачи.
+     * @param id          идентификатор задачи.
+     */
+    public Subtask(final String name, final String description, final Status status, final int newEpicId,
+                   final int id) {
+        super(name, description, status, id);
+        epicId = newEpicId;
+    }
+
+    /**
+     * Возвращает тип подзадачи значением ENUM.
+     *
+     * @return тип подзадачи.
+     */
+    @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
     }
 
     /**

@@ -74,6 +74,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     /**
+     * Сеттер свободного номера задачи.
+     * @param newNumber номер задачи.
+     */
+    public void setNumberOfTasks(final int newNumber) {
+        numberOfTasks = newNumber;
+    }
+
+    /**
      * Метод получения списка задач.
      *
      * @return список задач.

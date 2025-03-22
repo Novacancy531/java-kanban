@@ -91,20 +91,24 @@ public final class FileBackedTaskManager extends InMemoryTaskManager {
     public static FileBackedTaskManager loadFromFile(final File data) {
         try (BufferedReader reader = new BufferedReader(new FileReader(data, StandardCharsets.UTF_8))) {
             FileBackedTaskManager manager = new FileBackedTaskManager(data);
+            int currentLastId = 0;
 
             while (reader.ready()) {
                 var task = manager.taskFromString(reader.readLine());
 
-                if (task.getClass() == Task.class) {
-                    manager.getTaskMap().put(task.getId(), task);
-                } else if (task.getClass() == Epic.class) {
-                    manager.getEpicMap().put(task.getId(), (Epic) task);
-                } else if (task.getClass() == Subtask.class) {
-                    manager.getSubtaskMap().put(task.getId(), (Subtask) task);
-                    Epic epic = manager.getEpicMap().get(((Subtask) task).getEpicId());
-                    epic.getSubtasksList().add(task.getId());
+                switch (task.getType()) {
+                    case TaskType.EPIC -> manager.getEpicMap().put(task.getId(), (Epic) task);
+
+                    case SUBTASK -> {
+                        manager.getSubtaskMap().put(task.getId(), (Subtask) task);
+                        Epic epic = manager.getEpicMap().get(((Subtask) task).getEpicId());
+                        epic.getSubtasksList().add(task.getId());
+                    }
+
+                    default -> manager.getTaskMap().put(task.getId(), task);
                 }
             }
+            manager.setNumberOfTasks(currentLastId);
             return manager;
 
         } catch (IOException e) {
@@ -113,46 +117,29 @@ public final class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String taskToString(final Task task) {
-        String[] taskData = new String[STRING_LENGTH];
-
-        if (task.getClass().equals(Task.class)) {
-            taskData[TYPE] = TaskType.TASK.toString();
-        } else if (task.getClass().equals(Subtask.class)) {
-            taskData[TYPE] = TaskType.SUBTASK.toString();
-            taskData[EPIC_ID] = Integer.toString(((Subtask) task).getEpicId());
-        } else if ((task.getClass().equals(Epic.class))) {
-            taskData[TYPE] = TaskType.EPIC.toString();
-        }
-
-        taskData[NAME] = task.getName();
-        taskData[DESCRIPTION] = task.getDescription();
-        taskData[STATUS] = task.getStatus().toString();
-        taskData[ID] = Integer.toString(task.getId());
-
-        return String.join(",", taskData);
+        return switch (task.getType()) {
+            case TaskType.TASK -> String.format("%s,%s,%s,%s,%d", TaskType.TASK, task.getName(), task.getDescription(),
+                    task.getStatus(), task.getId());
+            case TaskType.SUBTASK -> String.format("%s,%s,%s,%s,%d,%d", TaskType.SUBTASK, task.getName(),
+                    task.getDescription(), task.getStatus(), task.getId(), ((Subtask) task).getEpicId());
+            case TaskType.EPIC -> String.format("%s,%s,%s,%s,%d", TaskType.EPIC, task.getName(), task.getDescription(),
+                    task.getStatus(), task.getId());
+        };
     }
 
     private Task taskFromString(final String line) {
         String[] taskData = line.split(",", STRING_LENGTH);
 
+        return switch (TaskType.valueOf(taskData[TYPE])) {
+            case TaskType.SUBTASK ->
+                    new Subtask(taskData[NAME], taskData[DESCRIPTION], Status.valueOf(taskData[STATUS]),
+                            Integer.parseInt(taskData[EPIC_ID]), Integer.parseInt(taskData[ID]));
 
-        switch (TaskType.valueOf(taskData[TYPE])) {
-            case TaskType.SUBTASK:
-                Subtask subtask = new Subtask(taskData[NAME], taskData[DESCRIPTION], Status.valueOf(taskData[STATUS]),
-                        Integer.parseInt(taskData[EPIC_ID]));
-                subtask.setId(Integer.parseInt(taskData[ID]));
-                return subtask;
+            case TaskType.EPIC -> new Epic(taskData[NAME], taskData[DESCRIPTION], Integer.parseInt(taskData[ID]));
 
-            case TaskType.EPIC:
-                Epic epic = new Epic(taskData[NAME], taskData[DESCRIPTION]);
-                epic.setId(Integer.parseInt(taskData[ID]));
-                return epic;
-
-            default:
-                Task task = new Task(taskData[NAME], taskData[DESCRIPTION], Status.valueOf(taskData[STATUS]));
-                task.setId(Integer.parseInt(taskData[ID]));
-                return task;
-        }
+            case TaskType.TASK -> new Task(taskData[NAME], taskData[DESCRIPTION], Status.valueOf(taskData[STATUS]),
+                    Integer.parseInt(taskData[ID]));
+        };
     }
 
     @Override
