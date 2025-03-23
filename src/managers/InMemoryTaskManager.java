@@ -17,19 +17,19 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * Карта для хранения задач.
      */
-    private final Map<Integer, Task> tasks;
+    protected final Map<Integer, Task> tasks;
     /**
      * Карта для хранения подзадач.
      */
-    private final Map<Integer, Subtask> subtasks;
+    protected final Map<Integer, Subtask> subtasks;
     /**
      * Карта для хранения больших задач (с подзадачами).
      */
-    private final Map<Integer, Epic> epics;
+    protected final Map<Integer, Epic> epics;
     /**
      * Счетчик задач.
      */
-    private int numberOfTasks = 0;
+    protected int numberOfTasks = 0;
     /**
      * Объект менеджера истории вызова задач.
      */
@@ -44,41 +44,6 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks = new HashMap<>();
         epics = new HashMap<>();
         historyManager = new InMemoryHistoryManager();
-    }
-
-    /**
-     * Геттер получения карты с задачами.
-     *
-     * @return карта задач.
-     */
-    public Map<Integer, Task> getTaskMap() {
-        return tasks;
-    }
-
-    /**
-     * Геттер получения карты с подзадачами.
-     *
-     * @return карта подзадач.
-     */
-    public Map<Integer, Subtask> getSubtaskMap() {
-        return subtasks;
-    }
-
-    /**
-     * Геттер получения карты больших задач.
-     *
-     * @return карта больших задач.
-     */
-    public Map<Integer, Epic> getEpicMap() {
-        return epics;
-    }
-
-    /**
-     * Сеттер свободного номера задачи.
-     * @param newNumber номер задачи.
-     */
-    public void setNumberOfTasks(final int newNumber) {
-        numberOfTasks = newNumber;
     }
 
     /**

@@ -63,26 +63,27 @@ public final class FileBackedTaskManager extends InMemoryTaskManager {
     public static FileBackedTaskManager loadFromFile(final File data) {
         try (BufferedReader reader = new BufferedReader(new FileReader(data, StandardCharsets.UTF_8))) {
             FileBackedTaskManager manager = new FileBackedTaskManager(data);
-            int currentLastId = 0;
 
             while (reader.ready()) {
                 var task = manager.taskFromString(reader.readLine());
 
                 switch (task.getType()) {
-                    case TaskType.EPIC -> manager.getEpicMap().put(task.getId(), (Epic) task);
+                    case TaskType.EPIC -> manager.epics.put(task.getId(), (Epic) task);
 
                     case SUBTASK -> {
-                        manager.getSubtaskMap().put(task.getId(), (Subtask) task);
-                        Epic epic = manager.getEpicMap().get(((Subtask) task).getEpicId());
+                        manager.subtasks.put(task.getId(), (Subtask) task);
+                        Epic epic = manager.epics.get(((Subtask) task).getEpicId());
                         epic.getSubtasksList().add(task.getId());
                     }
 
-                    default -> manager.getTaskMap().put(task.getId(), task);
+                    default -> manager.tasks.put(task.getId(), task);
+                }
+
+                if (task.getId() > manager.numberOfTasks) {
+                    manager.numberOfTasks = task.getId();
                 }
             }
 
-
-            manager.setNumberOfTasks(currentLastId);
             return manager;
 
         } catch (IOException e) {
