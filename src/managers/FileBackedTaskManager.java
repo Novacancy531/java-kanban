@@ -21,34 +21,6 @@ public final class FileBackedTaskManager extends InMemoryTaskManager {
      * Файл с расширением .csv предназначен для хранения задач которые разделены на строки.
      */
     private final File dataSave;
-    /**
-     * Позиция типа задачи в массиве строк.
-     */
-    private static final int TYPE = 0;
-    /**
-     * Позиция имени задачи в массиве строк.
-     */
-    private static final int NAME = 1;
-    /**
-     * Позиция описания задачи в массиве строк.
-     */
-    private static final int DESCRIPTION = 2;
-    /**
-     * Позиция статуса задачи в массиве строк.
-     */
-    private static final int STATUS = 3;
-    /**
-     * Позиция идентификатора задачи в массиве строк.
-     */
-    private static final int ID = 4;
-    /**
-     * Позиция идентификатора большой задачи в массиве строк.
-     */
-    private static final int EPIC_ID = 5;
-    /**
-     * Размер массива для хранения данных задачи.
-     */
-    private static final int STRING_LENGTH = 6;
 
 
     /**
@@ -108,6 +80,8 @@ public final class FileBackedTaskManager extends InMemoryTaskManager {
                     default -> manager.getTaskMap().put(task.getId(), task);
                 }
             }
+
+
             manager.setNumberOfTasks(currentLastId);
             return manager;
 
@@ -128,17 +102,29 @@ public final class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private Task taskFromString(final String line) {
-        String[] taskData = line.split(",", STRING_LENGTH);
+        final int type = 0;
+        final int name = 1;
+        final int description = 2;
+        final int status = 3;
+        final int id = 4;
+        final int epicId = 5;
+        final int stringLength = 6;
+        String[] taskData = line.split(",", stringLength);
 
-        return switch (TaskType.valueOf(taskData[TYPE])) {
+
+        return switch (TaskType.valueOf(taskData[type])) {
             case TaskType.SUBTASK ->
-                    new Subtask(taskData[NAME], taskData[DESCRIPTION], Status.valueOf(taskData[STATUS]),
-                            Integer.parseInt(taskData[EPIC_ID]), Integer.parseInt(taskData[ID]));
+                    new Subtask(taskData[name], taskData[description], Status.valueOf(taskData[status]),
+                            Integer.parseInt(taskData[epicId]), Integer.parseInt(taskData[id]));
 
-            case TaskType.EPIC -> new Epic(taskData[NAME], taskData[DESCRIPTION], Integer.parseInt(taskData[ID]));
+            case TaskType.EPIC -> {
+                Epic epic = new Epic(taskData[name], taskData[description], Integer.parseInt(taskData[id]));
+                epic.setStatus(Status.valueOf(taskData[status]));
+                yield epic;
+            }
 
-            case TaskType.TASK -> new Task(taskData[NAME], taskData[DESCRIPTION], Status.valueOf(taskData[STATUS]),
-                    Integer.parseInt(taskData[ID]));
+            case TaskType.TASK -> new Task(taskData[name], taskData[description], Status.valueOf(taskData[status]),
+                    Integer.parseInt(taskData[id]));
         };
     }
 

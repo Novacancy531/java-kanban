@@ -16,24 +16,24 @@ public final class Subtask extends Task {
      * @param name        имя задачи.
      * @param description описание задачи.
      * @param status      статус задачи.
-     * @param newEpicId   идентификатор большой задачи данной задачи.
+     * @param epicId   идентификатор большой задачи данной задачи.
      */
-    public Subtask(final String name, final String description, final Status status, final int newEpicId) {
+    public Subtask(final String name, final String description, final Status status, final int epicId) {
         super(name, description, status);
-        epicId = newEpicId;
+        this.epicId = epicId;
     }
 
     /**
      * @param name        имя задачи.
      * @param description описание задачи.
      * @param status      статус задачи.
-     * @param newEpicId   идентификатор большой задачи данной задачи.
+     * @param epicId   идентификатор большой задачи данной задачи.
      * @param id          идентификатор задачи.
      */
-    public Subtask(final String name, final String description, final Status status, final int newEpicId,
+    public Subtask(final String name, final String description, final Status status, final int epicId,
                    final int id) {
         super(name, description, status, id);
-        epicId = newEpicId;
+        this.epicId = epicId;
     }
 
     /**
