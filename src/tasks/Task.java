@@ -3,6 +3,7 @@ package tasks;
 import java.util.Objects;
 
 import enums.Status;
+import enums.TaskType;
 
 public class Task {
 
@@ -30,12 +31,34 @@ public class Task {
      * @param newDescription описание задачи.
      * @param newStatus      статус задачи.
      */
-    public Task(final String newName, final String newDescription,
-                final Status newStatus) {
+    public Task(final String newName, final String newDescription, final Status newStatus) {
         name = newName;
         description = newDescription;
         status = newStatus;
     }
+
+    /**
+     * @param newName        имя задачи.
+     * @param newDescription описание задачи.
+     * @param newStatus      статус задачи.
+     * @param newId          идентификатор задачи.
+     */
+    public Task(final String newName, final String newDescription, final Status newStatus, final int newId) {
+        name = newName;
+        description = newDescription;
+        status = newStatus;
+        id = newId;
+    }
+
+    /**
+     * Возвращает тип задачи значением ENUM.
+     *
+     * @return тип задачи.
+     */
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
+
 
     /**
      * Геттер имени.

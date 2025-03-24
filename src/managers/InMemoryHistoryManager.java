@@ -91,7 +91,7 @@ public final class InMemoryHistoryManager implements HistoryManager {
      *
      * @param node Node который требуется удалить.
      */
-    public void removeNode(@SuppressWarnings("ClassEscapesDefinedScope") final Node<Task> node) {
+    private void removeNode(final Node<Task> node) {
 
         if (node.prev == null) {
             head = node.next;

@@ -1,6 +1,7 @@
 package tasks;
 
 import enums.Status;
+import enums.TaskType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,26 @@ public final class Epic extends Task {
     public Epic(final String name, final String description) {
         super(name, description, Status.NEW);
         subtasksList = new ArrayList<>();
+    }
+
+    /**
+     * @param name        имя задачи.
+     * @param description описание задачи.
+     * @param id          идентификатор задачи.
+     */
+    public Epic(final String name, final String description, final int id) {
+        super(name, description, Status.NEW, id);
+        subtasksList = new ArrayList<>();
+    }
+
+    /**
+     * Возвращает тип большой задачи значением ENUM.
+     *
+     * @return тип Большой задачи.
+     */
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     /**
