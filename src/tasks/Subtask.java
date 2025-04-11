@@ -3,6 +3,9 @@ package tasks;
 import enums.Status;
 import enums.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public final class Subtask extends Task {
 
     /**
@@ -16,10 +19,13 @@ public final class Subtask extends Task {
      * @param name        имя задачи.
      * @param description описание задачи.
      * @param status      статус задачи.
-     * @param epicId   идентификатор большой задачи данной задачи.
+     * @param epicId      идентификатор большой задачи данной задачи.
+     * @param duration    время выполнения задачи.
+     * @param startTime   время начала выполнения задачи.
      */
-    public Subtask(final String name, final String description, final Status status, final int epicId) {
-        super(name, description, status);
+    public Subtask(final String name, final String description, final Status status, final int epicId,
+                   final Duration duration, final LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -27,12 +33,14 @@ public final class Subtask extends Task {
      * @param name        имя задачи.
      * @param description описание задачи.
      * @param status      статус задачи.
-     * @param epicId   идентификатор большой задачи данной задачи.
+     * @param epicId      идентификатор большой задачи данной задачи.
      * @param id          идентификатор задачи.
+     * @param duration    время выполнения задачи.
+     * @param startTime   время начала выполнения задачи.
      */
     public Subtask(final String name, final String description, final Status status, final int epicId,
-                   final int id) {
-        super(name, description, status, id);
+                   final int id, final Duration duration, final LocalDateTime startTime) {
+        super(name, description, status, id, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -57,10 +65,14 @@ public final class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "tasksObjects.Subtask{" + " name=" + getName()
-                + ", description='" + getDescription() + '\''
-                + ", id=" + getId()
-                + ", status=" + getStatus() + ", epicId" + getEpicId()
-                + '}' + System.lineSeparator();
+        return "Subtask{" +
+                "description='" + getDescription() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", id=" + getId() +
+                ", status=" + getStatus() +
+                ", epicId=" + getEpicId() +
+                ", duration=" + getDuration() +
+                ", startTime=" + getStartTime() +
+                '}' + System.lineSeparator();
     }
 }

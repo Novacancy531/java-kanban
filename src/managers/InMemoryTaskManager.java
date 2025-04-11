@@ -7,10 +7,9 @@ import tasks.Task;
 import tasks.Subtask;
 import tasks.Epic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -94,6 +93,7 @@ public class InMemoryTaskManager implements TaskManager {
             List<Integer> temporaryList = currentEpic.getSubtasksList();
             temporaryList.clear();
             updateEpicStatus(currentEpic);
+            updateEpicTime(currentEpic);
         }
         subtasks.clear();
     }
@@ -168,6 +168,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic temporaryEpic = epics.get(subtask.getEpicId());
         temporaryEpic.getSubtasksList().add(subtask.getId());
         updateEpicStatus(temporaryEpic);
+        updateEpicTime(temporaryEpic);
     }
 
     /**
@@ -181,6 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setId(numberOfTasks);
         epics.put(epic.getId(), epic);
         updateEpicStatus(epic);
+        updateEpicTime(epic);
     }
 
     /**
@@ -207,7 +209,7 @@ public class InMemoryTaskManager implements TaskManager {
             Epic temporaryEpic = epics.get(temporarySubtask.getEpicId());
             subtasks.replace(subtask.getId(), subtask);
             updateEpicStatus(temporaryEpic);
-
+            updateEpicTime(temporaryEpic);
         }
     }
 
@@ -223,6 +225,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setSubtasksList(temporaryEpic.getSubtasksList());
             epics.replace(epic.getId(), epic);
             updateEpicStatus(epic);
+            updateEpicTime(epic);
         }
     }
 
@@ -250,6 +253,7 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager.remove(id);
         subtasks.remove(id);
         updateEpicStatus(epic);
+        updateEpicTime(epic);
     }
 
     /**
@@ -277,11 +281,9 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Subtask> getSubtasksFromEpic(final Epic epic) {
-        ArrayList<Subtask> temporaryOutputList = new ArrayList<>();
-        for (int subtaskId : epic.getSubtasksList()) {
-            temporaryOutputList.add(subtasks.get(subtaskId));
-        }
-        return temporaryOutputList;
+        return epic.getSubtasksList().stream()
+                .map(subtasks::get)
+                .toList();
     }
 
     /**
@@ -322,5 +324,33 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(Status.IN_PROGRESS);
         }
+    }
+
+    /**
+     * Обновление времени начала, выполнения и завершения большой задачи.
+     * @param epic большая задача.
+     */
+    @Override
+    public void updateEpicTime(Epic epic) {
+        LocalDateTime startTime = LocalDateTime.MAX;
+        Duration duration = Duration.ofMinutes(0);
+
+        LocalDateTime startTimeLastTask = LocalDateTime.MIN;
+        Duration lastTaskDuration = Duration.ofMinutes(0);
+
+        for (int id : epic.getSubtasksList()) {
+            if (subtasks.get(id).getStartTime().isBefore(startTime)) {
+                startTime = subtasks.get(id).getStartTime();
+            }
+            if (subtasks.get(id).getStartTime().isAfter(startTimeLastTask)) {
+                startTimeLastTask = subtasks.get(id).getStartTime();
+                lastTaskDuration = subtasks.get(id).getDuration();
+            }
+            duration = duration.plusMinutes(subtasks.get(id).getDuration().toMinutes());
+        }
+
+        epic.setStartTime(startTime);
+        epic.setDuration(duration);
+        epic.setEndTime(startTimeLastTask.plus(lastTaskDuration));
     }
 }

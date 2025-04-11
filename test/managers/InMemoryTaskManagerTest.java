@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,11 +45,13 @@ class InMemoryTaskManagerTest {
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager();
-        task1 = new Task("1", "Задача 1", Status.NEW);
-        task2 = new Task("2", "Задача 2", Status.NEW);
+        task1 = new Task("1", "Задача 1", Status.NEW, Duration.ZERO, LocalDateTime.now());
+        task2 = new Task("2", "Задача 2", Status.NEW, Duration.ZERO, LocalDateTime.now());
         epic = new Epic("3", "Большая задача 3");
-        subtask1 = new Subtask("4", "Задача 4", Status.NEW, 1);
-        subtask2 = new Subtask("5", "Задача 5", Status.NEW, 1);
+        subtask1 = new Subtask("4", "Задача 4", Status.NEW, 1, Duration.ZERO,
+                LocalDateTime.now());
+        subtask2 = new Subtask("5", "Задача 5", Status.NEW, 1, Duration.ZERO,
+                LocalDateTime.now());
     }
 
 

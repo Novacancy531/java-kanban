@@ -147,6 +147,13 @@ public interface TaskManager {
     void updateEpicStatus(Epic epic);
 
     /**
+     * Обновление времени выполнения большой задачи.
+     *
+     * @param epic большая задача.
+     */
+    void updateEpicTime(Epic epic);
+
+    /**
      * Получение списка истории вызова задач всех типов.
      *
      * @return список истории задач.
