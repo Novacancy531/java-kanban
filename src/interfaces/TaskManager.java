@@ -5,6 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -159,4 +160,23 @@ public interface TaskManager {
      * @return список истории задач.
      */
     List<Task> getHistory();
+
+    /**
+     * Получение списка задач по времени их начала.
+     */
+    Set<Task> getPrioritizedTasks();
+
+    /**
+     * Проверка добавляемой задачи на пересечении по времени с другими задачами.
+     *
+     * @param addedTask добавляемая задача.
+     * @return boolean пересечения задачи.
+     */
+    boolean isOverlapping(Task addedTask);
+
+    /**
+     * Метод присвоения идентификатора при добавлении новой задачи.
+     * @param task добавляемая задача.
+     */
+    void newIdForTask(Task task);
 }

@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 public class TaskStringConverter {
@@ -25,14 +26,22 @@ public class TaskStringConverter {
                 .add(task.getDescription())
                 .add(task.getStatus().toString())
                 .add(String.valueOf(task.getId()))
-                .add(task.getDuration().toString())
-                .add(task.getStartTime().toString());
+                .add(task.getDuration().toString());
+
+        String startTimeString = Optional.ofNullable(task.getStartTime())
+                .map(LocalDateTime::toString)
+                .orElse("null");
+        line.add(startTimeString);
+
         if (task.getType().equals(TaskType.SUBTASK)) {
             line.add(String.valueOf(((Subtask) task).getEpicId()));
             line.add(null);
-        } else if (task.getType().equals(TaskType.EPIC)){
+        } else if (task.getType().equals(TaskType.EPIC)) {
+            String endTimeString = Optional.ofNullable(task.getEndTime())
+                    .map(LocalDateTime::toString)
+                    .orElse("null");
             line.add(null);
-            line.add(task.getEndTime().toString());
+            line.add(endTimeString);
         } else {
             line.add(null);
             line.add(null);
