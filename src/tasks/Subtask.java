@@ -65,14 +65,14 @@ public final class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" +
-                "description='" + getDescription() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", id=" + getId() +
-                ", status=" + getStatus() +
-                ", epicId=" + getEpicId() +
-                ", duration=" + getDuration() +
-                ", startTime=" + getStartTime() +
-                '}' + System.lineSeparator();
+        return "Subtask{"
+                + "description='" + getDescription() + '\''
+                + ", name='" + getName() + '\''
+                + ", id=" + getId()
+                + ", status=" + getStatus()
+                + ", epicId=" + getEpicId()
+                + ", duration=" + getDuration()
+                + ", startTime=" + getStartTime()
+                + '}' + System.lineSeparator();
     }
 }

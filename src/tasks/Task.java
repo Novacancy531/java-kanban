@@ -3,7 +3,6 @@ package tasks;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Optional;
 
 import enums.Status;
 import enums.TaskType;
@@ -160,7 +159,7 @@ public class Task {
      *
      * @param duration время выполнения.
      */
-    public void setDuration(Duration duration) {
+    public void setDuration(final Duration duration) {
         this.duration = duration;
     }
 
@@ -169,7 +168,7 @@ public class Task {
      *
      * @param startTime время начала выполнения.
      */
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(final LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
@@ -217,13 +216,13 @@ public class Task {
      */
     @Override
     public String toString() {
-        return "Task{" +
-                "description='" + description + '\'' +
-                ", name='" + name + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                ", duration=" + duration +
-                ", startTime=" + startTime +
-                '}' + System.lineSeparator();
+        return "Task{"
+                + "description='" + description + '\''
+                + ", name='" + name + '\''
+                + ", id=" + id
+                + ", status=" + status
+                + ", duration=" + duration
+                + ", startTime=" + startTime
+                + '}' + System.lineSeparator();
     }
 }

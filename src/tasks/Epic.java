@@ -85,7 +85,7 @@ public final class Epic extends Task {
      *
      * @param endTime время окончания выполнения.
      */
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(final LocalDateTime endTime) {
         this.endTime = endTime;
     }
 

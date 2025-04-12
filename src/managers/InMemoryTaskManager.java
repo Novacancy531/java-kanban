@@ -11,7 +11,11 @@ import tasks.Epic;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -36,6 +40,9 @@ public class InMemoryTaskManager implements TaskManager {
      */
     private final HistoryManager historyManager;
 
+    /**
+     *Объект для отслеживания приоритета задач.
+     */
     private final PrioritizedTasks prioritizedTasks;
 
 
@@ -347,20 +354,32 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasks.getTasks();
     }
 
+    /**
+     * Метод проверки пересечения задач по времени выполнения.
+     * @param addedTask добавляемая задача.
+     * @return результат пересечения добавляемой задачи с задачами из списка.
+     */
     @Override
-    public boolean isOverlapping(Task addedTask) {
-        return prioritizedTasks.getTasks().stream().noneMatch(task -> {
-            LocalDateTime addedStart = addedTask.getStartTime();
-            LocalDateTime addedEnd = addedTask.getEndTime();
-            LocalDateTime currentStart = task.getStartTime();
-            LocalDateTime currentEnd = task.getEndTime();
+    public boolean isOverlapping(final Task addedTask) {
+        return prioritizedTasks.getTasks().stream().filter(task -> !task.equals(addedTask))
+                .noneMatch(task -> {
+                    LocalDateTime addedStart = addedTask.getStartTime();
+                    LocalDateTime addedEnd = addedTask.getEndTime();
+                    LocalDateTime currentStart = task.getStartTime();
+                    LocalDateTime currentEnd = task.getEndTime();
 
-            return !(currentEnd.minusMinutes(1).isBefore(addedStart) || currentStart.isAfter(addedEnd.minusMinutes(1)));
-        });
+
+                    return !(currentEnd.minusMinutes(1).isBefore(addedStart)
+                            || currentStart.isAfter(addedEnd.minusMinutes(1)));
+                });
     }
 
+    /**
+     * Присваивает задаче новый идентификатор и увеличивает счетчик numberOfTasks на 1.
+     * @param task добавляемая задача.
+     */
     @Override
-    public void newIdForTask(Task task) {
+    public void newIdForTask(final Task task) {
         task.setId(++numberOfTasks);
     }
 
@@ -400,7 +419,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @param epic большая задача.
      */
     @Override
-    public void updateEpicTime(Epic epic) {
+    public void updateEpicTime(final Epic epic) {
         LocalDateTime startTime = LocalDateTime.MAX;
         Duration duration = Duration.ofMinutes(0);
 

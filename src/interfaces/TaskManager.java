@@ -163,6 +163,8 @@ public interface TaskManager {
 
     /**
      * Получение списка задач по времени их начала.
+     *
+     * @return Множество задач.
      */
     Set<Task> getPrioritizedTasks();
 
@@ -176,6 +178,7 @@ public interface TaskManager {
 
     /**
      * Метод присвоения идентификатора при добавлении новой задачи.
+     *
      * @param task добавляемая задача.
      */
     void newIdForTask(Task task);

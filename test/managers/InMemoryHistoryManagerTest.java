@@ -92,17 +92,21 @@ class InMemoryHistoryManagerTest {
     void remove() {
         historyManager.add(task1);
         historyManager.add(task2);
-
-        historyManager.remove(1);
-
+        historyManager.remove(task1.getId());
         Assertions.assertEquals(1, historyManager.getHistory().size(),
                 "Размер истории после удаления не изменился.");
         Assertions.assertEquals(task2, historyManager.getHistory().getFirst(),
                 "Ожидалась другая задача.");
+
+        historyManager.remove(task2.getId());
+        Assertions.assertEquals(0, historyManager.getHistory().size());
+
     }
 
     @Test
     void getHistory() {
+        Assertions.assertEquals(0, historyManager.getHistory().size());
+
         historyManager.add(epic);
         historyManager.add(subtask1);
         historyManager.add(subtask2);
@@ -116,5 +120,14 @@ class InMemoryHistoryManagerTest {
                 "История пустая.");
         Assertions.assertEquals(reference, historyManager.getHistory(),
                 "Неправильный вывод истории.");
+    }
+
+    @Test
+    void doubleTasksInHistory() {
+        Assertions.assertEquals(0, historyManager.getHistory().size());
+        historyManager.add(task1);
+        Assertions.assertEquals(1, historyManager.getHistory().size());
+        historyManager.add(task1);
+        Assertions.assertEquals(1, historyManager.getHistory().size());
     }
 }
