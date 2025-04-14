@@ -1,7 +1,8 @@
-package managers;
+package assistants;
 
 import enums.Status;
 import interfaces.TaskManager;
+import managers.FileBackedTaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,10 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-class FileBackedTaskManagerTest {
+class TaskStringConverterTest {
 
     /**
      * Менеджер задач.
@@ -50,10 +53,10 @@ class FileBackedTaskManagerTest {
     void setUp() {
         tempFile = new File(testDir, "storage.csv");
         manager = new FileBackedTaskManager(tempFile);
-        task = new Task("1", "Задача 1", Status.NEW);
+        task = new Task("1", "Задача 1", Status.NEW, Duration.ZERO, LocalDateTime.now());
         epic = new Epic("3", "Большая задача 3");
-        subtask1 = new Subtask("4", "Подзадача 4", Status.NEW, 2);
-        subtask2 = new Subtask("5", "Подзадача 5", Status.NEW, 2);
+        subtask1 = new Subtask("4", "d4", Status.NEW, 2, Duration.ZERO, LocalDateTime.now());
+        subtask2 = new Subtask("5", "d5", Status.NEW, 2, Duration.ZERO, LocalDateTime.now());
     }
 
 
@@ -77,8 +80,9 @@ class FileBackedTaskManagerTest {
         Assertions.assertEquals(subtask1, loaderManager.getSubtasks().getFirst());
         Assertions.assertEquals(subtask2, loaderManager.getSubtasks().get(1));
 
-        manager.addTask(new Task("2", "Задача 2", Status.NEW));
-        manager.updateSubtask(new Subtask("4", "Задача 4", Status.DONE, 2, 3));
+        manager.addTask(new Task("2", "d2", Status.NEW, Duration.ZERO, LocalDateTime.now()));
+        manager.updateSubtask(new Subtask("4", "d4", Status.DONE, 2, 4, Duration.ZERO,
+                LocalDateTime.now()));
 
         TaskManager secondLoaderManager = FileBackedTaskManager.loadFromFile(tempFile);
 

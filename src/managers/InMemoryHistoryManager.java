@@ -91,11 +91,16 @@ public final class InMemoryHistoryManager implements HistoryManager {
      *
      * @param node Node который требуется удалить.
      */
-    private void removeNode(final Node<Task> node) {
 
+    private void removeNode(final Node<Task> node) {
         if (node.prev == null) {
             head = node.next;
-            head.prev = null;
+            if (head != null) {
+                head.prev = null;
+            }
+            if (node == tail) {
+                tail = null;
+            }
         } else if (node.next == null) {
             tail = node.prev;
             tail.next = null;
@@ -103,8 +108,8 @@ public final class InMemoryHistoryManager implements HistoryManager {
             Node<Task> prev = node.prev;
             Node<Task> next = node.next;
 
-            prev.next = node.next;
-            next.prev = node.prev;
+            prev.next = next;
+            next.prev = prev;
         }
     }
 

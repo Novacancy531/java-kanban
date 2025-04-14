@@ -1,5 +1,6 @@
 package managers;
 
+import exceptions.ManagerAddTaskException;
 import interfaces.TaskManager;
 import enums.Status;
 import tasks.Task;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,11 +46,13 @@ class InMemoryTaskManagerTest {
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager();
-        task1 = new Task("1", "Задача 1", Status.NEW);
-        task2 = new Task("2", "Задача 2", Status.NEW);
+        task1 = new Task("1", "Задача 1", Status.NEW, Duration.ZERO, LocalDateTime.now());
+        task2 = new Task("2", "Задача 2", Status.NEW, Duration.ZERO, LocalDateTime.now());
         epic = new Epic("3", "Большая задача 3");
-        subtask1 = new Subtask("4", "Задача 4", Status.NEW, 1);
-        subtask2 = new Subtask("5", "Задача 5", Status.NEW, 1);
+        subtask1 = new Subtask("4", "Задача 4", Status.NEW, 1, Duration.ZERO,
+                LocalDateTime.now());
+        subtask2 = new Subtask("5", "Задача 5", Status.NEW, 1, Duration.ZERO,
+                LocalDateTime.now());
     }
 
 
@@ -223,11 +228,21 @@ class InMemoryTaskManagerTest {
         taskManager.addEpic(epic);
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
+        Assertions.assertEquals(Status.NEW, epic.getStatus(), "Статус не соответствует NEW");
 
         subtask1.setStatus(Status.DONE);
         taskManager.updateSubtask(subtask1);
+        Assertions.assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Статус не соответствует IN_PROGRESS");
 
-        Assertions.assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Неверный статус");
+        subtask2.setStatus(Status.DONE);
+        taskManager.updateSubtask(subtask2);
+        Assertions.assertEquals(Status.DONE, epic.getStatus(), "Статус не соответствует DONE");
+
+        subtask1.setStatus(Status.IN_PROGRESS);
+        subtask2.setStatus(Status.IN_PROGRESS);
+        taskManager.updateSubtask(subtask1);
+        taskManager.updateSubtask(subtask2);
+        Assertions.assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Статус не соответствует IN_PROGRESS");
     }
 
     @Test
@@ -248,5 +263,33 @@ class InMemoryTaskManagerTest {
         Assertions.assertEquals(task1.getStatus(), outputTask.getStatus(), "Статусы не равны");
         Assertions.assertEquals(task1.getId(), outputTask.getId(), "Идентификаторы  не равны");
 
+    }
+
+    @Test
+    void isOverlapping() {
+        task1.setStartTime(LocalDateTime.of(2025, 10, 10, 12, 0));
+        task1.setDuration(Duration.ofMinutes(61));
+        task2.setStartTime(LocalDateTime.of(2025, 10, 10, 13, 0));
+        task2.setDuration(Duration.ofMinutes(30));
+
+        try {
+            taskManager.addTask(task1);
+            taskManager.addTask(task2);
+
+            Assertions.assertEquals(1, taskManager.getPrioritizedTasks().size(), "Задачи добавились"
+                    + " неверно");
+
+            task1.setDuration(Duration.ofMinutes(30));
+            taskManager.updateTask(task1);
+            taskManager.addTask(task2);
+            Assertions.assertEquals(2, taskManager.getPrioritizedTasks().size());
+
+            task1.setDuration(Duration.ofMinutes(120));
+            taskManager.updateTask(task1);
+            Assertions.assertEquals(Duration.ofMinutes(30), taskManager.getTasks().get(task1.getId()).getDuration(),
+                    "Задача изменилась");
+        } catch (ManagerAddTaskException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

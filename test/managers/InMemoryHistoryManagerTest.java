@@ -9,6 +9,8 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,15 +46,17 @@ class InMemoryHistoryManagerTest {
     void setUp() {
         int id = 1;
         historyManager = new InMemoryHistoryManager();
-        task1 = new Task("1", "Задача 1", Status.NEW);
+        task1 = new Task("1", "Задача 1", Status.NEW, Duration.ZERO, LocalDateTime.now());
         task1.setId(id++);
-        task2 = new Task("2", "Задача 2", Status.NEW);
+        task2 = new Task("2", "Задача 2", Status.NEW, Duration.ZERO, LocalDateTime.now());
         task2.setId(id++);
         epic = new Epic("3", "Большая задача 3");
         epic.setId(id++);
-        subtask1 = new Subtask("4", "Задача 4", Status.NEW, epic.getId());
+        subtask1 = new Subtask("4", "Задача 4", Status.NEW, epic.getId(), Duration.ZERO,
+                LocalDateTime.now());
         subtask1.setId(id++);
-        subtask2 = new Subtask("5", "Задача 5", Status.NEW, epic.getId());
+        subtask2 = new Subtask("5", "Задача 5", Status.NEW, epic.getId(), Duration.ZERO,
+                LocalDateTime.now());
         subtask2.setId(id);
     }
 
@@ -88,17 +92,21 @@ class InMemoryHistoryManagerTest {
     void remove() {
         historyManager.add(task1);
         historyManager.add(task2);
-
-        historyManager.remove(1);
-
+        historyManager.remove(task1.getId());
         Assertions.assertEquals(1, historyManager.getHistory().size(),
                 "Размер истории после удаления не изменился.");
         Assertions.assertEquals(task2, historyManager.getHistory().getFirst(),
                 "Ожидалась другая задача.");
+
+        historyManager.remove(task2.getId());
+        Assertions.assertEquals(0, historyManager.getHistory().size());
+
     }
 
     @Test
     void getHistory() {
+        Assertions.assertEquals(0, historyManager.getHistory().size());
+
         historyManager.add(epic);
         historyManager.add(subtask1);
         historyManager.add(subtask2);
@@ -112,5 +120,14 @@ class InMemoryHistoryManagerTest {
                 "История пустая.");
         Assertions.assertEquals(reference, historyManager.getHistory(),
                 "Неправильный вывод истории.");
+    }
+
+    @Test
+    void doubleTasksInHistory() {
+        Assertions.assertEquals(0, historyManager.getHistory().size());
+        historyManager.add(task1);
+        Assertions.assertEquals(1, historyManager.getHistory().size());
+        historyManager.add(task1);
+        Assertions.assertEquals(1, historyManager.getHistory().size());
     }
 }

@@ -1,5 +1,7 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import enums.Status;
@@ -25,16 +27,31 @@ public class Task {
     private Status status;
 
     /**
+     * Время необходимое на выполнение задачи.
+     */
+    private Duration duration;
+
+    /**
+     * Время начала выполнения задачи.
+     */
+    private LocalDateTime startTime;
+
+    /**
      * Конструктор по умолчанию.
      *
      * @param newName        имя задачи.
      * @param newDescription описание задачи.
      * @param newStatus      статус задачи.
+     * @param newDuration    время выполнения задачи.
+     * @param newStartTime   время начала выполнения задачи.
      */
-    public Task(final String newName, final String newDescription, final Status newStatus) {
+    public Task(final String newName, final String newDescription, final Status newStatus,
+                final Duration newDuration, final LocalDateTime newStartTime) {
         name = newName;
         description = newDescription;
         status = newStatus;
+        duration = newDuration;
+        startTime = newStartTime;
     }
 
     /**
@@ -42,12 +59,17 @@ public class Task {
      * @param newDescription описание задачи.
      * @param newStatus      статус задачи.
      * @param newId          идентификатор задачи.
+     * @param newDuration    время выполнения задачи.
+     * @param newStartTime   время начала выполнения задачи.
      */
-    public Task(final String newName, final String newDescription, final Status newStatus, final int newId) {
+    public Task(final String newName, final String newDescription, final Status newStatus, final int newId,
+                final Duration newDuration, final LocalDateTime newStartTime) {
         name = newName;
         description = newDescription;
         status = newStatus;
         id = newId;
+        duration = newDuration;
+        startTime = newStartTime;
     }
 
     /**
@@ -97,6 +119,24 @@ public class Task {
     }
 
     /**
+     * Геттер получения времени выполнения задачи.
+     *
+     * @return время выполнения задачи.
+     */
+    public Duration getDuration() {
+        return duration;
+    }
+
+    /**
+     * Время начала выполнения задачи.
+     *
+     * @return время начала.
+     */
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    /**
      * Сеттер идентификатора задачи.
      *
      * @param newId новый идентификатор задачи.
@@ -112,6 +152,33 @@ public class Task {
      */
     public void setStatus(final Status newStatus) {
         status = newStatus;
+    }
+
+    /**
+     * Сеттер времени выполнения.
+     *
+     * @param duration время выполнения.
+     */
+    public void setDuration(final Duration duration) {
+        this.duration = duration;
+    }
+
+    /**
+     * Сеттер времени начала выполнения.
+     *
+     * @param startTime время начала выполнения.
+     */
+    public void setStartTime(final LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
+     * Метод получения времени окончания задачи.
+     *
+     * @return расчетное время окончания выполнения задачи.
+     */
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
     }
 
     /**
@@ -149,9 +216,13 @@ public class Task {
      */
     @Override
     public String toString() {
-        return "tasksObjects.Task{" + " name='" + name + '\''
-                + ", description='" + description + '\''
-                + ", id=" + id + ", status=" + status
+        return "Task{"
+                + "description='" + description + '\''
+                + ", name='" + name + '\''
+                + ", id=" + id
+                + ", status=" + status
+                + ", duration=" + duration
+                + ", startTime=" + startTime
                 + '}' + System.lineSeparator();
     }
 }
