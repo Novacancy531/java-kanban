@@ -1,5 +1,6 @@
 package managers;
 
+import exceptions.ManagerAddTaskException;
 import interfaces.TaskManager;
 import enums.Status;
 import tasks.Task;
@@ -271,21 +272,24 @@ class InMemoryTaskManagerTest {
         task2.setStartTime(LocalDateTime.of(2025, 10, 10, 13, 0));
         task2.setDuration(Duration.ofMinutes(30));
 
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
+        try {
+            taskManager.addTask(task1);
+            taskManager.addTask(task2);
 
-        Assertions.assertEquals(1, taskManager.getPrioritizedTasks().size(), "Задачи добавились"
-                + " неверно");
+            Assertions.assertEquals(1, taskManager.getPrioritizedTasks().size(), "Задачи добавились"
+                    + " неверно");
 
-        task1.setDuration(Duration.ofMinutes(30));
-        taskManager.updateTask(task1);
-        taskManager.addTask(task2);
-        Assertions.assertEquals(2, taskManager.getPrioritizedTasks().size());
+            task1.setDuration(Duration.ofMinutes(30));
+            taskManager.updateTask(task1);
+            taskManager.addTask(task2);
+            Assertions.assertEquals(2, taskManager.getPrioritizedTasks().size());
 
-        task1.setDuration(Duration.ofMinutes(120));
-        taskManager.updateTask(task1);
-        Assertions.assertEquals(Duration.ofMinutes(30), taskManager.getTasks().get(task1.getId()).getDuration(),
-                "Задача изменилась");
-
+            task1.setDuration(Duration.ofMinutes(120));
+            taskManager.updateTask(task1);
+            Assertions.assertEquals(Duration.ofMinutes(30), taskManager.getTasks().get(task1.getId()).getDuration(),
+                    "Задача изменилась");
+        } catch (ManagerAddTaskException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

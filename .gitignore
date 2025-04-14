@@ -28,3 +28,4 @@ hs_err_pid*
 /.idea/checkstyle.xml
 /qodana.sarif.json
 /.idea/sun_checks.xml
+/src/storage/taskStorage.csv

@@ -172,9 +172,8 @@ public interface TaskManager {
      * Проверка добавляемой задачи на пересечении по времени с другими задачами.
      *
      * @param addedTask добавляемая задача.
-     * @return boolean пересечения задачи.
      */
-    boolean isOverlapping(Task addedTask);
+    void isOverlapping(Task addedTask);
 
     /**
      * Метод присвоения идентификатора при добавлении новой задачи.

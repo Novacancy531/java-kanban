@@ -41,7 +41,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager historyManager;
 
     /**
-     *Объект для отслеживания приоритета задач.
+     * Объект для отслеживания приоритета задач.
      */
     private final PrioritizedTasks prioritizedTasks;
 
@@ -164,18 +164,11 @@ public class InMemoryTaskManager implements TaskManager {
      * @param task задача.
      */
     @Override
-    public void addTask(final Task task) {
-        try {
-            if (isOverlapping(task)) {
-                newIdForTask(task);
-                tasks.put(task.getId(), task);
-                prioritizedTasks.addTask(task);
-            } else {
-                throw new ManagerAddTaskException("Время добавляемой задачи занято другой задачей.");
-            }
-        } catch (ManagerAddTaskException e) {
-            System.out.println(e.getMessage());
-        }
+    public void addTask(final Task task) throws ManagerAddTaskException {
+        isOverlapping(task);
+        newIdForTask(task);
+        tasks.put(task.getId(), task);
+        prioritizedTasks.addTask(task);
     }
 
     /**
@@ -184,22 +177,15 @@ public class InMemoryTaskManager implements TaskManager {
      * @param subtask подзадача.
      */
     @Override
-    public void addSubtask(final Subtask subtask) {
-        try {
-            if (isOverlapping(subtask)) {
-                newIdForTask(subtask);
-                subtasks.put(subtask.getId(), subtask);
-                Epic temporaryEpic = epics.get(subtask.getEpicId());
-                temporaryEpic.getSubtasksList().add(subtask.getId());
-                prioritizedTasks.addTask(subtask);
-                updateEpicStatus(temporaryEpic);
-                updateEpicTime(temporaryEpic);
-            } else {
-                throw new ManagerAddTaskException("Время добавляемой задачи занято другой задачей.");
-            }
-        } catch (ManagerAddTaskException e) {
-            System.out.println(e.getMessage());
-        }
+    public void addSubtask(final Subtask subtask) throws ManagerAddTaskException {
+        isOverlapping(subtask);
+        newIdForTask(subtask);
+        subtasks.put(subtask.getId(), subtask);
+        Epic temporaryEpic = epics.get(subtask.getEpicId());
+        temporaryEpic.getSubtasksList().add(subtask.getId());
+        prioritizedTasks.addTask(subtask);
+        updateEpicStatus(temporaryEpic);
+        updateEpicTime(temporaryEpic);
     }
 
     /**
@@ -221,18 +207,11 @@ public class InMemoryTaskManager implements TaskManager {
      * @param task новая задача.
      */
     @Override
-    public void updateTask(final Task task) {
-        try {
-            if (isOverlapping(task)) {
-                if (tasks.containsKey(task.getId())) {
-                    prioritizedTasks.updateTask(tasks.get(task.getId()), task);
-                    tasks.replace(task.getId(), task);
-                }
-            } else {
-                throw new ManagerAddTaskException("Время обновляемой задачи занято другой задачей.");
-            }
-        } catch (ManagerAddTaskException e) {
-            System.out.println(e.getMessage());
+    public void updateTask(final Task task) throws ManagerAddTaskException {
+        isOverlapping(task);
+        if (tasks.containsKey(task.getId())) {
+            prioritizedTasks.updateTask(tasks.get(task.getId()), task);
+            tasks.replace(task.getId(), task);
         }
     }
 
@@ -242,22 +221,15 @@ public class InMemoryTaskManager implements TaskManager {
      * @param subtask новая подзадача.
      */
     @Override
-    public void updateSubtask(final Subtask subtask) {
-        try {
-            if (isOverlapping(subtask)) {
-                if (subtasks.containsKey(subtask.getId())) {
-                    Subtask temporarySubtask = subtasks.get(subtask.getId());
-                    Epic temporaryEpic = epics.get(temporarySubtask.getEpicId());
-                    prioritizedTasks.updateTask(subtasks.get(subtask.getId()), subtask);
-                    subtasks.replace(subtask.getId(), subtask);
-                    updateEpicStatus(temporaryEpic);
-                    updateEpicTime(temporaryEpic);
-                }
-            } else {
-                throw new ManagerAddTaskException("Время обновляемой задачи занято другой задачей.");
-            }
-        } catch (ManagerAddTaskException e) {
-            System.out.println(e.getMessage());
+    public void updateSubtask(final Subtask subtask) throws ManagerAddTaskException {
+        isOverlapping(subtask);
+        if (subtasks.containsKey(subtask.getId())) {
+            Subtask temporarySubtask = subtasks.get(subtask.getId());
+            Epic temporaryEpic = epics.get(temporarySubtask.getEpicId());
+            prioritizedTasks.updateTask(subtasks.get(subtask.getId()), subtask);
+            subtasks.replace(subtask.getId(), subtask);
+            updateEpicStatus(temporaryEpic);
+            updateEpicTime(temporaryEpic);
         }
     }
 
@@ -356,26 +328,28 @@ public class InMemoryTaskManager implements TaskManager {
 
     /**
      * Метод проверки пересечения задач по времени выполнения.
+     *
      * @param addedTask добавляемая задача.
-     * @return результат пересечения добавляемой задачи с задачами из списка.
      */
     @Override
-    public boolean isOverlapping(final Task addedTask) {
-        return prioritizedTasks.getTasks().stream().filter(task -> !task.equals(addedTask))
-                .noneMatch(task -> {
+    public void isOverlapping(final Task addedTask) throws ManagerAddTaskException {
+        if (prioritizedTasks.getTasks().stream()
+                .filter(task -> !task.equals(addedTask))
+                .anyMatch(task -> {
                     LocalDateTime addedStart = addedTask.getStartTime();
                     LocalDateTime addedEnd = addedTask.getEndTime();
                     LocalDateTime currentStart = task.getStartTime();
                     LocalDateTime currentEnd = task.getEndTime();
 
-
-                    return !(currentEnd.minusMinutes(1).isBefore(addedStart)
-                            || currentStart.isAfter(addedEnd.minusMinutes(1)));
-                });
+                    return (currentStart.isBefore(addedEnd) && currentEnd.isAfter(addedStart));
+                })) {
+            throw new ManagerAddTaskException("Время обновляемой задачи занято другой задачей.");
+        }
     }
 
     /**
      * Присваивает задаче новый идентификатор и увеличивает счетчик numberOfTasks на 1.
+     *
      * @param task добавляемая задача.
      */
     @Override
