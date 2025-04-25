@@ -9,22 +9,21 @@ import tasks.Task;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 
-public class TaskHandler extends BaseHandler implements HttpHandler {
+public final class TaskHandler extends BaseHandler implements HttpHandler {
 
-    TaskManager taskManager;
-
-    public TaskHandler(TaskManager taskManager) {
+    /**
+     * Конструктор класса.
+     *
+     * @param taskManager менеджер задач.
+     */
+    public TaskHandler(final TaskManager taskManager) {
         super(taskManager);
-        this.taskManager = taskManager;
     }
 
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
-        URI uri = httpExchange.getRequestURI();
-        String path = uri.getPath();
-        String[] splitPath = path.split("/");
+    public void handle(final HttpExchange httpExchange) throws IOException {
+        String[] splitPath = splitUriPath(httpExchange);
 
         try {
             if ("GET".equals(httpExchange.getRequestMethod())) {
@@ -46,21 +45,19 @@ public class TaskHandler extends BaseHandler implements HttpHandler {
                     taskManager.updateTask(task);
                 }
 
-                sendSuccessful(httpExchange);
+                sendCreated(httpExchange);
             } else if ("DELETE".equals(httpExchange.getRequestMethod())) {
-             taskManager.deleteTaskById(Integer.parseInt(splitPath[2]));
-             sendText(httpExchange, "Задача удалена");
+                taskManager.deleteTaskById(Integer.parseInt(splitPath[2]));
+                sendText(httpExchange, "Задача удалена");
             }
         } catch (NullPointerException e) {
             sendNotFound(httpExchange);
         } catch (ManagerAddTaskException e) {
             sendHasInteractions(httpExchange);
-        } catch (Exception e) {
-            sendError(httpExchange, "Internal Server Error" + e.getMessage());
         }
     }
 
-    private Task taskReaderFromJson(HttpExchange httpExchange) throws IOException {
+    private Task taskReaderFromJson(final HttpExchange httpExchange) throws IOException {
         try (JsonReader reader = new JsonReader(new InputStreamReader(httpExchange.getRequestBody()))) {
             return gson.fromJson(reader, Task.class);
         }

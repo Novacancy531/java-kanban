@@ -13,11 +13,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-public class TaskStringConverter {
+public final class TaskStringConverter {
 
     private TaskStringConverter() {
     }
 
+    /**
+     * Метод создания строки из задачи (объекта).
+     * @param task задача.
+     * @return задача в виде строки.
+     */
     public static String taskToString(final Task task) {
 
         StringJoiner line = new StringJoiner(",");
@@ -25,8 +30,12 @@ public class TaskStringConverter {
                 .add(task.getName())
                 .add(task.getDescription())
                 .add(task.getStatus().toString())
-                .add(String.valueOf(task.getId()))
-                .add(task.getDuration().toString());
+                .add(String.valueOf(task.getId()));
+
+        String duration = Optional.ofNullable(task.getDuration())
+                .map(Duration::toString)
+                .orElse("null");
+        line.add(duration);
 
         String startTimeString = Optional.ofNullable(task.getStartTime())
                 .map(LocalDateTime::toString)
@@ -50,6 +59,11 @@ public class TaskStringConverter {
         return line.toString();
     }
 
+    /**
+     * Метод создания задачи (объекта) из строки.
+     * @param line задача в виде строки.
+     * @return задача.
+     */
     public static Task taskFromString(final String line) {
 
         List<String> partTask = Arrays.stream(line.split(",")).toList();

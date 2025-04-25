@@ -3,20 +3,23 @@ package http;
 import com.google.gson.stream.JsonReader;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import enums.Status;
 import exceptions.ManagerAddTaskException;
 import interfaces.TaskManager;
-import tasks.Subtask;
+import tasks.Epic;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
-public final class SubtaskHandler extends BaseHandler implements HttpHandler {
+public final class EpicHandler extends BaseHandler implements HttpHandler {
 
     /**
      * Конструктор класса.
+     *
      * @param taskManager менеджер задач.
      */
-    public SubtaskHandler(final TaskManager taskManager) {
+    public EpicHandler(final TaskManager taskManager) {
         super(taskManager);
     }
 
@@ -28,26 +31,25 @@ public final class SubtaskHandler extends BaseHandler implements HttpHandler {
             if ("GET".equals(httpExchange.getRequestMethod())) {
                 String json;
 
-                if (splitPath.length == 2) {
-                    json = gson.toJson(taskManager.getSubtasks());
+                if (splitPath.length == 4) {
+                    Epic epic = taskManager.getEpicById(Integer.parseInt(splitPath[2]));
+                    json = gson.toJson(taskManager.getSubtasksFromEpic(epic));
+                } else if (splitPath.length == 3) {
+                    json = gson.toJson(taskManager.getEpicById(Integer.parseInt(splitPath[2])));
                 } else {
-                    json = gson.toJson(taskManager.getSubtaskById(Integer.parseInt(splitPath[2])));
+                    json = gson.toJson(taskManager.getEpics());
                 }
 
                 sendText(httpExchange, json);
             } else if ("POST".equals(httpExchange.getRequestMethod())) {
-                Subtask task = subtaskReaderFromJson(httpExchange);
-
-                if (task.getId() == 0) {
-                    taskManager.addSubtask(task);
-                } else {
-                    taskManager.updateSubtask(task);
-                }
-
+                Epic epic = epicReaderFromJson(httpExchange);
+                epic.setStatus(Status.NEW);
+                epic.setSubtasksList(new ArrayList<>());
+                taskManager.addEpic(epic);
                 sendCreated(httpExchange);
             } else if ("DELETE".equals(httpExchange.getRequestMethod())) {
-                taskManager.deleteSubtaskById(Integer.parseInt(splitPath[2]));
-                sendText(httpExchange, "Подзадача удалена");
+                taskManager.deleteEpicById(Integer.parseInt(splitPath[2]));
+                sendText(httpExchange, "Задача удалена");
             }
         } catch (NullPointerException e) {
             sendNotFound(httpExchange);
@@ -56,12 +58,10 @@ public final class SubtaskHandler extends BaseHandler implements HttpHandler {
         }
     }
 
-    private Subtask subtaskReaderFromJson(final HttpExchange httpExchange) throws IOException {
+    private Epic epicReaderFromJson(final HttpExchange httpExchange) throws IOException {
         try (JsonReader reader = new JsonReader(new InputStreamReader(httpExchange.getRequestBody()))) {
-            return gson.fromJson(reader, Subtask.class);
+            return gson.fromJson(reader, Epic.class);
         }
     }
-
-
 }
 

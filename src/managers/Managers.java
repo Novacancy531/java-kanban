@@ -1,6 +1,5 @@
 package managers;
 
-import assistants.Initialize;
 import interfaces.TaskManager;
 import interfaces.HistoryManager;
 
@@ -20,7 +19,12 @@ public final class Managers {
         return new InMemoryTaskManager();
     }
 
-    public static TaskManager FileBackedTaskManager(File file) {
+    /**
+     * Метод для создания менеджера задач с сохранением м в файл.
+     * @param file файл для сохранения задач.
+     * @return экземпляр менеджера задач.
+     */
+    public static TaskManager fileBackedTaskManager(final File file) {
         return new FileBackedTaskManager(file);
     }
 
