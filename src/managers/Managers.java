@@ -1,7 +1,10 @@
 package managers;
 
+import assistants.Initialize;
 import interfaces.TaskManager;
 import interfaces.HistoryManager;
+
+import java.io.File;
 
 
 public final class Managers {
@@ -15,6 +18,10 @@ public final class Managers {
      */
     public static TaskManager getDefault() {
         return new InMemoryTaskManager();
+    }
+
+    public static TaskManager FileBackedTaskManager(File file) {
+        return new FileBackedTaskManager(file);
     }
 
     /**

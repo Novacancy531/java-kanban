@@ -11,11 +11,7 @@ import tasks.Epic;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -129,7 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @return задача.
      */
     @Override
-    public Task receivingTaskById(final int id) {
+    public Task getTaskById(final int id) throws NullPointerException {
         historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
@@ -141,7 +137,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @return подзадача.
      */
     @Override
-    public Subtask receivingSubtaskById(final int id) {
+    public Subtask getSubtaskById(final int id) throws NullPointerException {
         historyManager.add(subtasks.get(id));
         return subtasks.get(id);
     }
@@ -153,7 +149,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @return большая задача.
      */
     @Override
-    public Epic receivingEpicById(final int id) {
+    public Epic getEpicById(final int id) throws NullPointerException {
         historyManager.add(epics.get(id));
         return epics.get(id);
     }

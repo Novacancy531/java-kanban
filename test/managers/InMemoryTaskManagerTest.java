@@ -134,9 +134,9 @@ class InMemoryTaskManagerTest {
         taskManager.addEpic(epic);
         taskManager.addSubtask(subtask1);
 
-        Assertions.assertEquals(1, taskManager.receivingEpicById(1).getId(),
+        Assertions.assertEquals(1, taskManager.getEpicById(1).getId(),
                 "id большой задачи не равен");
-        Assertions.assertEquals(2, taskManager.receivingSubtaskById(2).getId(),
+        Assertions.assertEquals(2, taskManager.getSubtaskById(2).getId(),
                 "id подзадачи не верный");
     }
 
@@ -144,7 +144,7 @@ class InMemoryTaskManagerTest {
     void addTask() {
         taskManager.addTask(task1);
 
-        Assertions.assertEquals(task1, taskManager.receivingTaskById(1), "Задача добавилась неверно");
+        Assertions.assertEquals(task1, taskManager.getTaskById(1), "Задача добавилась неверно");
     }
 
     @Test
@@ -154,7 +154,7 @@ class InMemoryTaskManagerTest {
         int subtaskId = epic.getSubtasksList().getFirst();
 
 
-        Assertions.assertEquals(subtask1, taskManager.receivingSubtaskById(2), "Подзадача добавилась неверно");
+        Assertions.assertEquals(subtask1, taskManager.getSubtaskById(2), "Подзадача добавилась неверно");
         Assertions.assertEquals(2, subtaskId, "Неверно добавился номер подзадачи в большую задачу");
     }
 
@@ -162,7 +162,7 @@ class InMemoryTaskManagerTest {
     void addEpic() {
         taskManager.addEpic(epic);
 
-        Assertions.assertEquals(epic, taskManager.receivingEpicById(1), "Большая задача добавилась неверно");
+        Assertions.assertEquals(epic, taskManager.getEpicById(1), "Большая задача добавилась неверно");
     }
 
     @Test
@@ -171,7 +171,7 @@ class InMemoryTaskManagerTest {
         task1.setStatus(Status.IN_PROGRESS);
         taskManager.updateTask(task1);
 
-        Assertions.assertEquals(task1, taskManager.receivingTaskById(1), "Задача обновилась неверно");
+        Assertions.assertEquals(task1, taskManager.getTaskById(1), "Задача обновилась неверно");
     }
 
     @Test
@@ -181,7 +181,7 @@ class InMemoryTaskManagerTest {
         subtask1.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask1);
 
-        Assertions.assertEquals(subtask1, taskManager.receivingSubtaskById(2), "Подзадача обновилась неверно");
+        Assertions.assertEquals(subtask1, taskManager.getSubtaskById(2), "Подзадача обновилась неверно");
 
     }
 
@@ -256,7 +256,7 @@ class InMemoryTaskManagerTest {
     @Test
     void taskEqualsFromManager() {
         taskManager.addTask(task1);
-        Task outputTask = taskManager.receivingTaskById(1);
+        Task outputTask = taskManager.getTaskById(1);
 
         Assertions.assertEquals(task1.getName(), outputTask.getName(), "Имена не равны");
         Assertions.assertEquals(task1.getDescription(), outputTask.getDescription(), "Описание не равно");

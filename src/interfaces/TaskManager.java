@@ -51,7 +51,7 @@ public interface TaskManager {
      * @param id идентификатор
      * @return задача.
      */
-    Task receivingTaskById(int id);
+    Task getTaskById(int id);
 
     /**
      * Получение подзадачи по идентификатору.
@@ -59,7 +59,7 @@ public interface TaskManager {
      * @param id идентификатор
      * @return подзадача.
      */
-    Subtask receivingSubtaskById(int id);
+    Subtask getSubtaskById(int id);
 
     /**
      * Получение большой задачи по идентификатору.
@@ -67,7 +67,7 @@ public interface TaskManager {
      * @param id идентификатор
      * @return большая задача.
      */
-    Epic receivingEpicById(int id);
+    Epic getEpicById(int id);
 
     /**
      * Добавление задачи в карту задач.
