@@ -1,19 +1,17 @@
 package http;
 
-import com.google.gson.stream.JsonReader;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import exceptions.ManagerAddTaskException;
 import interfaces.TaskManager;
 import tasks.Subtask;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 
-public final class SubtaskHandler extends BaseHandler implements HttpHandler {
+public final class SubtaskHandler extends SelectHandlerMethod implements HttpHandler {
 
     /**
      * Конструктор класса.
+     *
      * @param taskManager менеджер задач.
      */
     public SubtaskHandler(final TaskManager taskManager) {
@@ -21,47 +19,34 @@ public final class SubtaskHandler extends BaseHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(final HttpExchange httpExchange) throws IOException {
-        String[] splitPath = splitUriPath(httpExchange);
+    void getTask(final HttpExchange httpExchange, final String[] path) throws IOException {
+        if (path.length == 2) {
+            sendText(httpExchange, gson.toJson(taskManager.getSubtasks()));
+        } else {
+            sendText(httpExchange, gson.toJson(taskManager.getSubtaskById(Integer.parseInt(path[2]))));
+        }
+    }
 
-        try {
-            if ("GET".equals(httpExchange.getRequestMethod())) {
-                String json;
+    @Override
+    void postTask(final HttpExchange httpExchange, final String[] path) throws IOException {
+        Subtask subtask = (Subtask) readerFromJson(httpExchange);
 
-                if (splitPath.length == 2) {
-                    json = gson.toJson(taskManager.getSubtasks());
-                } else {
-                    json = gson.toJson(taskManager.getSubtaskById(Integer.parseInt(splitPath[2])));
-                }
-
-                sendText(httpExchange, json);
-            } else if ("POST".equals(httpExchange.getRequestMethod())) {
-                Subtask task = subtaskReaderFromJson(httpExchange);
-
-                if (task.getId() == 0) {
-                    taskManager.addSubtask(task);
-                } else {
-                    taskManager.updateSubtask(task);
-                }
-
-                sendCreated(httpExchange);
-            } else if ("DELETE".equals(httpExchange.getRequestMethod())) {
-                taskManager.deleteSubtaskById(Integer.parseInt(splitPath[2]));
-                sendText(httpExchange, "Подзадача удалена");
+        if (taskManager.getEpicById(subtask.getEpicId()) != null) {
+            if (subtask.getId() == 0) {
+                taskManager.addSubtask(subtask);
+            } else {
+                taskManager.updateSubtask(subtask);
             }
-        } catch (NullPointerException e) {
-            sendNotFound(httpExchange);
-        } catch (ManagerAddTaskException e) {
-            sendHasInteractions(httpExchange);
+            sendCreated(httpExchange);
         }
+
+        sendNotFound(httpExchange);
     }
 
-    private Subtask subtaskReaderFromJson(final HttpExchange httpExchange) throws IOException {
-        try (JsonReader reader = new JsonReader(new InputStreamReader(httpExchange.getRequestBody()))) {
-            return gson.fromJson(reader, Subtask.class);
-        }
+    @Override
+    void deleteTask(final HttpExchange httpExchange, final String[] path) throws IOException {
+        taskManager.deleteSubtaskById(Integer.parseInt(path[2]));
+        sendText(httpExchange, "Subtask deleted");
     }
-
-
 }
 

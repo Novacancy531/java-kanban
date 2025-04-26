@@ -6,7 +6,7 @@ import interfaces.TaskManager;
 
 import java.io.IOException;
 
-public final class PrioritizedHandler extends BaseHandler implements HttpHandler {
+public final class PrioritizedHandler extends SelectHandlerMethod implements HttpHandler {
 
     /**
      * Конструктор класса.
@@ -18,11 +18,17 @@ public final class PrioritizedHandler extends BaseHandler implements HttpHandler
     }
 
     @Override
-    public void handle(final HttpExchange httpExchange) throws IOException {
-        if ("GET".equals(httpExchange.getRequestMethod())) {
-            String json = gson.toJson(taskManager.getPrioritizedTasks());
-            sendText(httpExchange, json);
-            System.out.println(taskManager.getPrioritizedTasks());
-        }
+    void getTask(final HttpExchange httpExchange, final String[] path) throws IOException {
+        sendText(httpExchange, gson.toJson(taskManager.getPrioritizedTasks()));
+    }
+
+    @Override
+    void postTask(final HttpExchange httpExchange, final String[] path) throws IOException {
+        sendNotFound(httpExchange);
+    }
+
+    @Override
+    void deleteTask(final HttpExchange httpExchange, final String[] path) throws IOException {
+        sendNotFound(httpExchange);
     }
 }
