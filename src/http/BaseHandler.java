@@ -17,7 +17,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 class BaseHandler {
 

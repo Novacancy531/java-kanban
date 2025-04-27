@@ -23,7 +23,7 @@ public final class TaskHandler extends SelectHandlerMethod implements HttpHandle
         if (path.length == 2) {
             sendText(httpExchange, gson.toJson(taskManager.getTasks()));
         } else {
-            sendText(httpExchange, gson.toJson(gson.toJson(taskManager.getTaskById(Integer.parseInt(path[2])))));
+            sendText(httpExchange, gson.toJson(taskManager.getTaskById(Integer.parseInt(path[2]))));
         }
     }
 

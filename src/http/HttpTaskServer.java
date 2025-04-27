@@ -5,29 +5,34 @@ import com.sun.net.httpserver.HttpServer;
 import interfaces.TaskManager;
 import managers.Managers;
 
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
 
 @SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public class HttpTaskServer {
 
+    /**
+     * Порт для сервера.
+     */
+    private static final int PORT = 8080;
+    /**
+     * Экземпляр Http сервера.
+     */
+    private static HttpServer httpServer;
 
     /**
      * Основной метод работы программы.
+     *
      * @param args аргументы запуска.
      */
     public static void main(final String[] args) {
-        start();
+        start(Managers.fileBackedTaskManager(Initialize.initializeStorage()));
     }
 
-    private static void start() {
-        final TaskManager taskManager = Managers.fileBackedTaskManager(Initialize.initializeStorage());
-
+    public static void start(final TaskManager taskManager) {
 
         try {
-            HttpServer httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
+            httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
 
             httpServer.createContext("/tasks", new TaskHandler(taskManager));
             httpServer.createContext("/subtasks", new SubtaskHandler(taskManager));
@@ -36,17 +41,13 @@ public class HttpTaskServer {
             httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
 
             httpServer.start();
-            System.out.println("Server started on port 8080");
+            System.out.println("Server started on port " + PORT);
         } catch (IOException e) {
             System.out.println("Server failed to start");
         }
     }
 
-    private static void stop(final HttpServer httpServer) {
-        httpServer.stop(10);
+    public static void stop() {
+        httpServer.stop(2);
     }
-
-
 }
-
-
