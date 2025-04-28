@@ -25,7 +25,7 @@ class BaseHandler {
      */
     protected final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Duration.class, new TypoAdapters.DurationTypeAdapter())
-            .registerTypeAdapter(LocalDateTime.class, new TypoAdapters.LocalDateAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new TypoAdapters.LocalDateTimeAdapter())
             .serializeNulls()
             .setPrettyPrinting()
             .create();

@@ -66,11 +66,6 @@ class HttpTest {
     private Subtask subtask2;
 
     /**
-     * Временный файл-хранилище.
-     */
-    private File tempFile;
-
-    /**
      * Временная директория.
      */
     @TempDir
@@ -78,11 +73,11 @@ class HttpTest {
 
     @BeforeEach
     void setUp() {
-        tempFile = new File(testDir, "storage.csv");
+        File tempFile = new File(testDir, "storage.csv");
         manager = new FileBackedTaskManager(tempFile);
         gson = new GsonBuilder()
                 .registerTypeAdapter(Duration.class, new TypoAdapters.DurationTypeAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new TypoAdapters.LocalDateAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new TypoAdapters.LocalDateTimeAdapter())
                 .serializeNulls()
                 .setPrettyPrinting()
                 .create();
@@ -127,59 +122,34 @@ class HttpTest {
     }
 
     @Test
-    void addAndUpdateTask() throws IOException, InterruptedException {
+    void addTask() throws IOException, InterruptedException {
         String taskJson = gson.toJson(task);
 
-        HttpResponse<String> response;
         try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest postRequest = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/tasks"))
-                    .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(taskJson))
-                    .build();
-
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-
-            // Проверяем статус-код
-            assertEquals(HttpURLConnection.HTTP_CREATED, response.statusCode(), "Неверный статус-код ответа");
-
-            // Проверяем наличие тела ответа
-            assertNotNull(response.body(), "Тело ответа не получено");
-
-            // Проверяем, что создалась одна задача с корректным именем
-            List<Task> tasksFromManager = manager.getTasks();
-
-            assertNotNull(tasksFromManager, "Задачи не возвращаются");
-            assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-            assertEquals("1", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
-            assertEquals(Status.NEW, tasksFromManager.getFirst().getStatus(), "Некорректный статус задачи.");
-
-            task.setStatus(Status.DONE);
-            task.setId(1);
-            String updateTaskJson = gson.toJson(task);
-
-            HttpRequest updateRequest = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/tasks"))
                     .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(updateTaskJson))
+                    .build();
+            HttpResponse<String> postResponse = client.send(postRequest, HttpResponse.BodyHandlers.ofString());
+            assertEquals(HttpURLConnection.HTTP_CREATED, postResponse.statusCode(), "Ошибка создания задачи");
+            assertNotNull(postResponse.body(), "Пустое тело ответа");
+
+
+            HttpRequest getRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/tasks/1/"))
+                    .GET()
                     .build();
 
-            response = client.send(updateRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
-            // Проверяем статус-код
-            assertEquals(HttpURLConnection.HTTP_CREATED, response.statusCode(), "Неверный статус-код ответа");
+            assertEquals(HttpURLConnection.HTTP_OK, getResponse.statusCode(), "Ошибка получения задачи.");
 
-            // Проверяем наличие тела ответа
-            assertNotNull(response.body(), "Тело ответа не получено");
+            Task retrievedTask = gson.fromJson(getResponse.body(), Task.class);
+            assertNotNull(retrievedTask, "Задача не найдена");
 
-            // Проверяем, что создалась одна задача с корректным именем
-            tasksFromManager = manager.getTasks();
-
-            assertNotNull(tasksFromManager, "Задачи не возвращаются");
-            assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-            assertEquals("1", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
-            assertEquals(Status.DONE, tasksFromManager.getFirst().getStatus(), "Некорректный статус");
+            assertEquals(task.getName(), retrievedTask.getName(), "Некорректное имя");
+            assertEquals(Status.NEW, retrievedTask.getStatus(), "Некорректный статус");
         }
     }
 
@@ -211,12 +181,61 @@ class HttpTest {
     }
 
     @Test
-    void addAndUpdateSubtask() {
+    void addSubtask() throws IOException, InterruptedException {
+        manager.addEpic(epic);
+        manager.addSubtask(subtask1);
+        String subtaskJson = gson.toJson(subtask1);
+
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest postRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/subtasks"))
+                    .POST(HttpRequest.BodyPublishers.ofString(subtaskJson))
+                    .header("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> postResponse = client.send(postRequest, HttpResponse.BodyHandlers.ofString());
+            assertEquals(HttpURLConnection.HTTP_CREATED, postResponse.statusCode(), "Ошибка создания задачи");
+            assertNotNull(postResponse.body(), "Пустое тело ответа");
+
+
+            HttpRequest getRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/subtasks/2/"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+            assertEquals(HttpURLConnection.HTTP_OK, getResponse.statusCode(), "Ошибка получения задачи.");
+
+            Task retrievedSubtask = gson.fromJson(getResponse.body(), Subtask.class);
+            assertNotNull(retrievedSubtask, "Задача не найдена");
+
+            assertEquals(subtask1.getName(), retrievedSubtask.getName(), "Некорректное имя");
+            assertEquals(Status.NEW, retrievedSubtask.getStatus(), "Некорректный статус");
+        }
     }
 
     @Test
-    void getSubtasks() {
+    void getSubtasks() throws IOException, InterruptedException {
+        manager.addEpic(epic);
+        manager.addSubtask(subtask1);
 
+        HttpResponse<String> response;
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/subtasks/2"))
+                    .header("Content-Type", "application/json")
+                    .GET()
+                    .build();
+
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            Task requestSubtask = gson.fromJson(response.body(), Subtask.class);
+
+            assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Неверный статус-код ответа");
+
+            assertNotNull(response.body(), "Тело ответа не получено");
+            assertEquals(subtask1.getName(), requestSubtask.getName(), "Имя задачи не сходится.");
+            assertEquals(subtask1, requestSubtask, "Задача не сходится.");
+        }
     }
 
     @Test
@@ -248,12 +267,59 @@ class HttpTest {
     }
 
     @Test
-    void addEpic() {
+    void addEpic() throws IOException, InterruptedException {
+        epic.setId(1);
+        String epicJson = gson.toJson(epic);
+
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest postRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/epics"))
+                    .POST(HttpRequest.BodyPublishers.ofString(epicJson))
+                    .header("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> postResponse = client.send(postRequest, HttpResponse.BodyHandlers.ofString());
+            assertEquals(HttpURLConnection.HTTP_CREATED, postResponse.statusCode(), "Ошибка создания эпика");
+            assertNotNull(postResponse.body(), "Пустое тело ответа");
+
+
+            HttpRequest getRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/epics/1/"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+            assertEquals(HttpURLConnection.HTTP_OK, getResponse.statusCode(), "Ошибка получения эпика");
+
+            Epic retrievedEpic = gson.fromJson(getResponse.body(), Epic.class);
+            assertNotNull(retrievedEpic, "Эпик не найден");
+
+            assertEquals(epic.getName(), retrievedEpic.getName(), "Некорректное имя");
+            assertEquals(Status.NEW, retrievedEpic.getStatus(), "Некорректный статус");
+        }
     }
 
     @Test
-    void getEpics() {
+    void getEpic() throws IOException, InterruptedException {
+        manager.addEpic(epic);
 
+        HttpResponse<String> response;
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/epics/1/"))
+                    .header("Content-Type", "application/json")
+                    .GET()
+                    .build();
+
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            Epic requestEpic = gson.fromJson(response.body(), Epic.class);
+
+            assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Неверный статус-код ответа");
+
+            assertNotNull(response.body(), "Тело ответа не получено");
+            assertEquals(epic.getName(), requestEpic.getName(), "Имя задачи не сходится.");
+            assertEquals(epic, requestEpic, "Задачи не идентичные.");
+        }
     }
 
     @Test
@@ -285,8 +351,37 @@ class HttpTest {
     }
 
     @Test
-    void getSubtasksList() {
+    void getSubtasksList() throws IOException, InterruptedException {
+        manager.addEpic(epic);
+        manager.addSubtask(subtask1);
+        manager.addSubtask(subtask2);
+        String epicJson = gson.toJson(manager.getEpicById(1));
 
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest postRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/epics"))
+                    .POST(HttpRequest.BodyPublishers.ofString(epicJson))
+                    .header("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> postResponse = client.send(postRequest, HttpResponse.BodyHandlers.ofString());
+            assertEquals(HttpURLConnection.HTTP_CREATED, postResponse.statusCode(), "Ошибка создания эпика");
+            assertNotNull(postResponse.body(), "Пустое тело ответа");
+
+
+            HttpRequest getRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/epics/1/subtasksList/"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+            assertEquals(HttpURLConnection.HTTP_OK, getResponse.statusCode(), "Ошибка получения списка");
+
+            List<Subtask> subtasksList = gson.fromJson(getResponse.body(), new TypeToken<List<Subtask>>() {
+            }.getType());
+
+            assertEquals(manager.getSubtasksFromEpic(manager.getEpicById(1)), subtasksList, "Некорректный список");
+        }
     }
 
     @Test
@@ -316,10 +411,7 @@ class HttpTest {
             }.getType());
 
 
-            // Проверяем статус-код
             assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Неверный статус-код ответа");
-
-            // Проверяем наличие тела ответа
             assertNotNull(response.body(), "Тело ответа не получено");
 
             assertNotNull(tasks, "Задачи не возвращаются");
@@ -354,11 +446,8 @@ class HttpTest {
             Set<Task> tasks = gson.fromJson(response.body(), new TypeToken<Set<Task>>() {
             }.getType());
 
-
-            // Проверяем статус-код
             assertEquals(HttpURLConnection.HTTP_OK, response.statusCode(), "Неверный статус-код ответа");
 
-            // Проверяем наличие тела ответа
             assertNotNull(response.body(), "Тело ответа не получено");
 
             assertNotNull(tasks, "Задачи не возвращаются");
@@ -367,6 +456,4 @@ class HttpTest {
 
         }
     }
-
-
 }

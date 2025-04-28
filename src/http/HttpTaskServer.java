@@ -8,8 +8,11 @@ import managers.Managers;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
-public class HttpTaskServer {
+
+public final class HttpTaskServer {
+
+    private HttpTaskServer() {
+    }
 
     /**
      * Порт для сервера.
@@ -29,6 +32,11 @@ public class HttpTaskServer {
         start(Managers.fileBackedTaskManager(Initialize.initializeStorage()));
     }
 
+    /**
+     * Метод для запуска сервера.
+     *
+     * @param taskManager экземпляр менеджера задач для сервера.
+     */
     public static void start(final TaskManager taskManager) {
 
         try {
@@ -47,6 +55,9 @@ public class HttpTaskServer {
         }
     }
 
+    /**
+     * Метод для остановки сервера.
+     */
     public static void stop() {
         httpServer.stop(2);
     }
