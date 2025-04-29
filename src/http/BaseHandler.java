@@ -60,6 +60,11 @@ class BaseHandler {
         exchange.close();
     }
 
+    protected void sendMethodNotAllowed(final HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_METHOD, 0);
+        exchange.close();
+    }
+
     protected void sendHasInteractions(final HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_ACCEPTABLE, 0);
         exchange.close();

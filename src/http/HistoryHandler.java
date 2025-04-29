@@ -1,12 +1,11 @@
 package http;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import interfaces.TaskManager;
 
 import java.io.IOException;
 
-public final class HistoryHandler extends SelectHandlerMethod implements HttpHandler {
+public final class HistoryHandler extends SelectHandlerMethod {
 
     /**
      * Конструктор класса.
@@ -24,11 +23,11 @@ public final class HistoryHandler extends SelectHandlerMethod implements HttpHan
 
     @Override
     void postTask(final HttpExchange httpExchange, final String[] path) throws IOException {
-        sendNotFound(httpExchange);
+        sendMethodNotAllowed(httpExchange);
     }
 
     @Override
     void deleteTask(final HttpExchange httpExchange, final String[] path) throws IOException {
-        sendNotFound(httpExchange);
+        sendMethodNotAllowed(httpExchange);
     }
 }

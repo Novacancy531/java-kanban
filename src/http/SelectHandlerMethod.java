@@ -32,10 +32,8 @@ public abstract class SelectHandlerMethod extends BaseHandler implements HttpHan
                 case "DELETE" -> deleteTask(httpExchange, splitPath);
 
 
-                default -> throw new NullPointerException();
+                default -> sendMethodNotAllowed(httpExchange);
             }
-        } catch (NullPointerException e) {
-            sendNotFound(httpExchange);
         } catch (ManagerAddTaskException e) {
             sendHasInteractions(httpExchange);
         }

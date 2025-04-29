@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -65,15 +64,10 @@ class HttpTest {
      */
     private Subtask subtask2;
 
-    /**
-     * Временная директория.
-     */
-    @TempDir
-    private static File testDir;
 
     @BeforeEach
-    void setUp() {
-        File tempFile = new File(testDir, "storage.csv");
+    void setUp() throws IOException {
+        File tempFile = File.createTempFile("storage", "csv");
         manager = new FileBackedTaskManager(tempFile);
         gson = new GsonBuilder()
                 .registerTypeAdapter(Duration.class, new TypoAdapters.DurationTypeAdapter())

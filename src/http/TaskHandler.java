@@ -1,13 +1,12 @@
 package http;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import interfaces.TaskManager;
 import tasks.Task;
 
 import java.io.IOException;
 
-public final class TaskHandler extends SelectHandlerMethod implements HttpHandler {
+public final class TaskHandler extends SelectHandlerMethod {
 
     /**
      * Конструктор класса.

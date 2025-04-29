@@ -1,7 +1,6 @@
 package http;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import enums.Status;
 import interfaces.TaskManager;
 import tasks.Epic;
@@ -9,7 +8,7 @@ import tasks.Epic;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public final class EpicHandler extends SelectHandlerMethod implements HttpHandler {
+public final class EpicHandler extends SelectHandlerMethod {
 
     /**
      * Конструктор класса.
