@@ -3,6 +3,8 @@ package managers;
 import interfaces.TaskManager;
 import interfaces.HistoryManager;
 
+import java.io.File;
+
 
 public final class Managers {
 
@@ -15,6 +17,15 @@ public final class Managers {
      */
     public static TaskManager getDefault() {
         return new InMemoryTaskManager();
+    }
+
+    /**
+     * Метод для создания менеджера задач с сохранением м в файл.
+     * @param file файл для сохранения задач.
+     * @return экземпляр менеджера задач.
+     */
+    public static TaskManager fileBackedTaskManager(final File file) {
+        return new FileBackedTaskManager(file);
     }
 
     /**

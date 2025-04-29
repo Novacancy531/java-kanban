@@ -129,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @return задача.
      */
     @Override
-    public Task receivingTaskById(final int id) {
+    public Task getTaskById(final int id) throws NullPointerException {
         historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
@@ -141,7 +141,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @return подзадача.
      */
     @Override
-    public Subtask receivingSubtaskById(final int id) {
+    public Subtask getSubtaskById(final int id) throws NullPointerException {
         historyManager.add(subtasks.get(id));
         return subtasks.get(id);
     }
@@ -153,7 +153,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @return большая задача.
      */
     @Override
-    public Epic receivingEpicById(final int id) {
+    public Epic getEpicById(final int id) throws NullPointerException {
         historyManager.add(epics.get(id));
         return epics.get(id);
     }
@@ -197,8 +197,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void addEpic(final Epic epic) {
         newIdForTask(epic);
         epics.put(epic.getId(), epic);
-        updateEpicStatus(epic);
-        updateEpicTime(epic);
     }
 
     /**

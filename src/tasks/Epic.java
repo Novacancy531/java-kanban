@@ -19,7 +19,6 @@ public final class Epic extends Task {
      */
     private List<Integer> subtasksList;
 
-
     /**
      * Конструктор по умолчанию.
      *
